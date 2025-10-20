@@ -1,0 +1,4 @@
+version: v1
+name: buf.build/likhon/user-service
+deps:
+  - buf.build/envoyproxy/protoc-gen-validate

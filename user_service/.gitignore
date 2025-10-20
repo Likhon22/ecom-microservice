@@ -51,6 +51,12 @@ docker-data/
 coverage/
 lcov-report/
 
+# Generated Proto files
+src/proto/gen/
+**/gen/*.ts
+*_pb.ts
+*_connect.ts
+
 # Misc
 *.tgz
 *.bak

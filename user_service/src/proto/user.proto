@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package user_service;
+
+import "google/protobuf/timestamp.proto";
+import "validate/validate.proto";
+
+
+
+
+
+service UserService {
+ rpc SignUp (User) returns (User);
+}
+enum UserRole {
+    USER_ROLE_UNSPECIFIED = 0; 
+    ADMIN = 1;
+    SUPER_ADMIN = 2;
+    CUSTOMER = 3;
+}
+enum UserStatus {
+    USER_STATUS_UNSPECIFIED = 0;
+    IN_PROGRESS = 1;
+    BLOCKED = 2;
+}
+
+
+message User {
+    string id = 1; 
+    string password = 2 [(validate.rules).string.min_len = 8]; 
+    google.protobuf.Timestamp password_changed_at = 3;
+    string email = 4 [(validate.rules).string.email = true];   
+    UserRole role = 5;   
+    UserStatus status = 6;
+    bool is_deleted = 7;
+    google.protobuf.Timestamp created_at = 8;
+    google.protobuf.Timestamp updated_at = 9;
+}
+
+
+message SignUpResponse {
+    User user = 1;
+    string message  = 2;
+}
