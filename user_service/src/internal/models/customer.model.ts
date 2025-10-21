@@ -5,7 +5,12 @@ const customerSchema = new Schema<TCustomer>(
   {
     name: { type: String, required: true },
     phone: { type: String },
-    user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+      unique: true,
+    },
     address: { type: String },
     avatarUrl: { type: String },
     email: { type: String, required: true, unique: true },

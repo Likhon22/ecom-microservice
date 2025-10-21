@@ -16,8 +16,6 @@ export class UserCustomerService implements UserCustomerServiceInterface {
   }
 
   async create(payload: UserCustomerDto): Promise<UserCustomerDto> {
-    console.log(payload);
-
     const session = await mongoose.startSession();
     session.startTransaction();
 
@@ -29,6 +27,12 @@ export class UserCustomerService implements UserCustomerServiceInterface {
         role: 'customer',
       };
       const createdUser = await this.repo.createUser(user, session);
+      if (!createdUser) {
+        throw new Error('User creation failed. Cannot create customer.');
+      }
+      if (!createdUser._id) {
+        throw new Error('User creation failed. no id available.');
+      }
 
       // --- Create Customer linked to User ---
       const customer: Partial<TCustomer> = {
