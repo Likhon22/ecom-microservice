@@ -1,10 +1,8 @@
-import type { Types } from 'mongoose';
-
-export interface TCustomer {
+export interface UserCustomerDto {
   name: string;
-  user: Types.ObjectId;
   phone?: string;
   address?: string;
   avatarUrl?: string;
   email: string;
+  password: string;
 }

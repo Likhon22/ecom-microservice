@@ -41,6 +41,7 @@
     "@bufbuild/connect-web": "^0.13.0",
     "@bufbuild/protobuf": "^1.10.1",
     "mongoose": "^8.19.1",
-    "ts-node-dev": "^2.0.0"
+    "ts-node-dev": "^2.0.0",
+    "zod": "^4.1.12"
   }
 }

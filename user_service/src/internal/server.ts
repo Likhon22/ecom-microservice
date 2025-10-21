@@ -1,11 +1,10 @@
 import type { Application } from 'express';
 import type { Server } from 'http';
 import config from './config/index.js';
-import type { Connection } from 'mongoose';
 
 let httpServer: Server;
 
-async function startServer(app: Application, db: Connection): Promise<Server> {
+async function startServer(app: Application): Promise<Server> {
   try {
     httpServer = app.listen(config.port, () => {
       console.log(`User service listening on port ${config.port}`);
