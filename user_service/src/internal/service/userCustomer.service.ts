@@ -3,6 +3,7 @@ import type { UserCustomerRepo } from '../repo/userCustomer.repo.js';
 import type { UserCustomerDto } from '../domain/dtos/userCustmer.dto.js';
 import type { TUser } from '../domain/user.domain.js';
 import type { TCustomer } from '../domain/customer.domain.js';
+import { hashPassword } from '../utils/hashPassword.js';
 
 export interface UserCustomerServiceInterface {
   create(user: UserCustomerDto): Promise<UserCustomerDto>;
@@ -20,10 +21,11 @@ export class UserCustomerService implements UserCustomerServiceInterface {
     session.startTransaction();
 
     try {
+      const passwordHash = await hashPassword(payload.password);
       // --- Create User ---
       const user: Partial<TUser> = {
         email: payload.email,
-        password: payload.password,
+        password: passwordHash,
         role: 'customer',
       };
       const createdUser = await this.repo.createUser(user, session);
