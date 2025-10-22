@@ -11,17 +11,13 @@ export class UserCustomerHandler {
   }
 
   async create(req: Request, res: Response) {
-    try {
-      const payload = req.body as UserCustomerDto;
+    const payload = req.body as UserCustomerDto;
 
-      const user = await this.service.create(payload);
-      sendResponse(res, {
-        message: 'user created successfully',
-        data: user,
-        statusCode: 200,
-      });
-    } catch (err) {
-      console.log(err);
-    }
+    const user = await this.service.create(payload);
+    sendResponse(res, {
+      message: 'user created successfully',
+      data: user,
+      statusCode: 200,
+    });
   }
 }

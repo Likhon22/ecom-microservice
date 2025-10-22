@@ -1,11 +1,11 @@
-import { ZodError, type ZodIssue } from 'zod';
+import z, { ZodError } from 'zod';
 import type {
   TErrorSources,
   TGenericErrorResponse,
 } from '../types/error.type.js';
 
 const handleZodError = (err: ZodError): TGenericErrorResponse => {
-  const errorSources: TErrorSources = err.issues.map((issue: ZodIssue) => {
+  const errorSources: TErrorSources = err.issues.map((issue: z.ZodIssue) => {
     return {
       path: issue?.path[issue.path.length - 1],
       message: issue.message,
