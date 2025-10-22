@@ -44,9 +44,12 @@ async function main() {
 
     registerRoutes(app, userCustomerHandler, mw);
 
-    // not found routes
+    // global error handler
+    app.use(mw.globalErrorHandler);
 
+    // not found routes
     app.use(mw.noRoutesFound);
+
     await startServer(app);
     console.log('Server is running with db');
   } catch (err: any) {
