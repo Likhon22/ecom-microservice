@@ -83,6 +83,9 @@ export class UserCustomerService implements UserCustomerServiceInterface {
     }));
   }
   async getByEmail(email: string): Promise<UserCustomerResponseDto> {
+    if (email === '') {
+      throw new ApiError(400, 'there is no email');
+    }
     const customer = await this.repo.getByEmail(email);
     if (!customer) {
       throw new ApiError(404, 'customer not found');
