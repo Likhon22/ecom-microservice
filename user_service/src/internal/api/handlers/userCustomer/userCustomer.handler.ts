@@ -1,7 +1,7 @@
 import type { Request, Response } from 'express';
 
 import type { UserCustomerService } from '../../../service/userCustomer.service.js';
-import type { UserCustomerDto } from '../../../domain/dtos/userCustmer.dto.js';
+import type { UserCustomerRequestDto } from '../../../domain/dtos/userCustmer.dto.js';
 import sendResponse from '../../../utils/sendResponse.js';
 
 export class UserCustomerHandler {
@@ -11,12 +11,20 @@ export class UserCustomerHandler {
   }
 
   async create(req: Request, res: Response) {
-    const payload = req.body as UserCustomerDto;
+    const payload = req.body as UserCustomerRequestDto;
 
     const user = await this.service.create(payload);
     sendResponse(res, {
       message: 'user created successfully',
       data: user,
+      statusCode: 200,
+    });
+  }
+  async get(req: Request, res: Response) {
+    const customers = await this.service.get();
+    sendResponse(res, {
+      message: 'customer fetched successfully',
+      data: customers,
       statusCode: 200,
     });
   }

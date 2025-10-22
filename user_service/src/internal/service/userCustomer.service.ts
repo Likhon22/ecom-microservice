@@ -1,12 +1,17 @@
 import mongoose from 'mongoose';
 import type { UserCustomerRepo } from '../repo/userCustomer.repo.js';
-import type { UserCustomerDto } from '../domain/dtos/userCustmer.dto.js';
+import type {
+  UserCustomerRequestDto,
+  UserCustomerResponseDto,
+} from '../domain/dtos/userCustmer.dto.js';
 import type { TUser } from '../domain/user.domain.js';
 import type { TCustomer } from '../domain/customer.domain.js';
 import { hashPassword } from '../utils/hashPassword.js';
+import ApiError from '../error/appError.js';
 
 export interface UserCustomerServiceInterface {
-  create(user: UserCustomerDto): Promise<UserCustomerDto>;
+  create(user: UserCustomerRequestDto): Promise<UserCustomerResponseDto>;
+  get(): Promise<UserCustomerResponseDto[]>;
 }
 
 export class UserCustomerService implements UserCustomerServiceInterface {
@@ -16,7 +21,9 @@ export class UserCustomerService implements UserCustomerServiceInterface {
     this.repo = repo;
   }
 
-  async create(payload: UserCustomerDto): Promise<UserCustomerDto> {
+  async create(
+    payload: UserCustomerRequestDto,
+  ): Promise<UserCustomerResponseDto> {
     const session = await mongoose.startSession();
     session.startTransaction();
 
@@ -29,12 +36,6 @@ export class UserCustomerService implements UserCustomerServiceInterface {
         role: 'customer',
       };
       const createdUser = await this.repo.createUser(user, session);
-      if (!createdUser) {
-        throw new Error('User creation failed. Cannot create customer.');
-      }
-      if (!createdUser._id) {
-        throw new Error('User creation failed. no id available.');
-      }
 
       // --- Create Customer linked to User ---
       const customer: Partial<TCustomer> = {
@@ -50,17 +51,34 @@ export class UserCustomerService implements UserCustomerServiceInterface {
       // --- Commit transaction ---
       await session.commitTransaction();
 
-      // --- Return safe DTO ---
       return {
         name: createdCustomer.name,
         email: createdCustomer.email,
-        password: '',
+        role: createdUser.role,
+        status: createdUser.status,
+        ...(createdCustomer.address && { address: createdCustomer.address }),
+        ...(createdCustomer.avatarUrl && {
+          avatarUrl: createdCustomer.avatarUrl,
+        }),
+        ...(createdCustomer.phone && { phone: createdCustomer.phone }),
       };
     } catch (error) {
       await session.abortTransaction();
-      throw new Error(`User-Customer creation failed: ${error}`);
+      throw new ApiError(500, `User-Customer creation failed: ${error}`);
     } finally {
       session.endSession();
     }
+  }
+  async get(): Promise<UserCustomerResponseDto[]> {
+    const customers = await this.repo.get();
+    return customers.map(customer => ({
+      name: customer.name,
+      email: customer.email,
+      role: customer.user.role,
+      status: customer.user.status,
+      ...(customer.phone && { phone: customer.phone }),
+      ...(customer.avatarUrl && { avatarUrl: customer.avatarUrl }),
+      ...(customer.address && { address: customer.address }),
+    }));
   }
 }

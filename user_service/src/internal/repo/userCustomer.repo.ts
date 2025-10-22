@@ -1,6 +1,10 @@
 import type { Model, ClientSession } from 'mongoose';
 import type { TUser } from '../domain/user.domain.js';
-import type { TCustomer } from '../domain/customer.domain.js';
+import type {
+  TCustomer,
+  TCustomerPopulated,
+} from '../domain/customer.domain.js';
+import ApiError from '../error/appError.js';
 
 export interface UserCustomerRepoInterface {
   createUser(user: Partial<TUser>, session?: ClientSession): Promise<TUser>;
@@ -8,6 +12,7 @@ export interface UserCustomerRepoInterface {
     customer: Partial<TCustomer>,
     session?: ClientSession,
   ): Promise<TCustomer>;
+  get(): Promise<TCustomerPopulated[]>;
 }
 
 export class UserCustomerRepo implements UserCustomerRepoInterface {
@@ -24,7 +29,7 @@ export class UserCustomerRepo implements UserCustomerRepoInterface {
     session?: ClientSession,
   ): Promise<TUser> {
     const createdUser = await this.userModel.create([{ ...user }], { session });
-    if (!createdUser[0]) throw new Error('User creation failed');
+    if (!createdUser[0]) throw new ApiError(500, 'User creation failed');
     return createdUser[0].toObject();
   }
 
@@ -35,7 +40,15 @@ export class UserCustomerRepo implements UserCustomerRepoInterface {
     const createdCustomer = await this.customerModel.create([{ ...customer }], {
       session,
     });
-    if (!createdCustomer[0]) throw new Error('Customer creation failed');
+    if (!createdCustomer[0])
+      throw new ApiError(500, 'Customer creation failed');
     return createdCustomer[0].toObject();
+  }
+  async get(): Promise<TCustomerPopulated[]> {
+    const customers = await this.customerModel
+      .find()
+      .populate('user', 'role status')
+      .lean<TCustomerPopulated[]>();
+    return customers;
   }
 }

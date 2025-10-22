@@ -14,6 +14,7 @@ export function userCustomerRoutes(
     mw.validate(TCustomerSchema),
     catchAsync(handler.create.bind(handler)),
   );
+  router.get('/', catchAsync(handler.get.bind(handler)));
 
   return router;
 }
