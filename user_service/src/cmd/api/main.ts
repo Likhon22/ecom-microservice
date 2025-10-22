@@ -51,7 +51,7 @@ async function main() {
     app.use(mw.noRoutesFound);
 
     await startServer(app);
-    console.log('Server is running with db');
+    console.log('Server is running with db mongodb');
   } catch (err: any) {
     console.log('Failed to start the server', err);
   }

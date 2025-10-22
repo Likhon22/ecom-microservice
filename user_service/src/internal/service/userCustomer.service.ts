@@ -1,4 +1,3 @@
-import mongoose from 'mongoose';
 import type { UserCustomerRepo } from '../repo/userCustomer.repo.js';
 import type {
   UserCustomerRequestDto,
@@ -8,10 +7,12 @@ import type { TUser } from '../domain/user.domain.js';
 import type { TCustomer } from '../domain/customer.domain.js';
 import { hashPassword } from '../utils/hashPassword.js';
 import ApiError from '../error/appError.js';
+import mongoose from 'mongoose';
 
 export interface UserCustomerServiceInterface {
   create(user: UserCustomerRequestDto): Promise<UserCustomerResponseDto>;
   get(): Promise<UserCustomerResponseDto[]>;
+  getByEmail(email: string): Promise<UserCustomerResponseDto>;
 }
 
 export class UserCustomerService implements UserCustomerServiceInterface {
@@ -80,5 +81,20 @@ export class UserCustomerService implements UserCustomerServiceInterface {
       ...(customer.avatarUrl && { avatarUrl: customer.avatarUrl }),
       ...(customer.address && { address: customer.address }),
     }));
+  }
+  async getByEmail(email: string): Promise<UserCustomerResponseDto> {
+    const customer = await this.repo.getByEmail(email);
+    if (!customer) {
+      throw new ApiError(404, 'customer not found');
+    }
+    return {
+      name: customer.name,
+      email: customer.email,
+      role: customer.user.role,
+      status: customer.user.status,
+      ...(customer.phone && { phone: customer.phone }),
+      ...(customer.avatarUrl && { avatarUrl: customer.avatarUrl }),
+      ...(customer.address && { address: customer.address }),
+    };
   }
 }

@@ -7,6 +7,7 @@ export interface TCustomer {
   phone?: string;
   address?: string;
   avatarUrl?: string;
+
   email: string;
 }
 export interface TCustomerPopulated extends Omit<TCustomer, 'user'> {

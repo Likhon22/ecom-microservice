@@ -23,6 +23,15 @@ export class UserCustomerHandler {
   async get(req: Request, res: Response) {
     const customers = await this.service.get();
     sendResponse(res, {
+      message: 'customers fetched successfully',
+      data: customers,
+      statusCode: 200,
+    });
+  }
+  async getByEmail(req: Request, res: Response) {
+    const email = req.params.email as string;
+    const customers = await this.service.getByEmail(email);
+    sendResponse(res, {
       message: 'customer fetched successfully',
       data: customers,
       statusCode: 200,

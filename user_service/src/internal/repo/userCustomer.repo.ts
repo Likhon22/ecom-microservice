@@ -13,6 +13,7 @@ export interface UserCustomerRepoInterface {
     session?: ClientSession,
   ): Promise<TCustomer>;
   get(): Promise<TCustomerPopulated[]>;
+  getByEmail(id: string): Promise<TCustomerPopulated | null>;
 }
 
 export class UserCustomerRepo implements UserCustomerRepoInterface {
@@ -50,5 +51,12 @@ export class UserCustomerRepo implements UserCustomerRepoInterface {
       .populate('user', 'role status')
       .lean<TCustomerPopulated[]>();
     return customers;
+  }
+  async getByEmail(email: string): Promise<TCustomerPopulated | null> {
+    const customer = await this.customerModel
+      .findOne({ email: email })
+      .populate('user', 'role status')
+      .lean<TCustomerPopulated>();
+    return customer;
   }
 }

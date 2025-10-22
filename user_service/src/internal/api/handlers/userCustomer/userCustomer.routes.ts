@@ -15,6 +15,7 @@ export function userCustomerRoutes(
     catchAsync(handler.create.bind(handler)),
   );
   router.get('/', catchAsync(handler.get.bind(handler)));
+  router.get('/:email', catchAsync(handler.getByEmail.bind(handler)));
 
   return router;
 }
