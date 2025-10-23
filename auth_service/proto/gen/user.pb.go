@@ -423,7 +423,7 @@ var File_user_proto protoreflect.FileDescriptor
 const file_user_proto_rawDesc = "" +
 	"\n" +
 	"\n" +
-	"user.proto\x12\fauth_service\x1a\x17validate/validate.proto\"\xc7\x01\n" +
+	"user.proto\x12\fuser_service\x1a\x17validate/validate.proto\"\xc7\x01\n" +
 	"\x15CreateCustomerRequest\x12\x1b\n" +
 	"\x04name\x18\x01 \x01(\tB\a\xfaB\x04r\x02\x10\x01R\x04name\x12\x1d\n" +
 	"\x05email\x18\x02 \x01(\tB\a\xfaB\x04r\x02`\x01R\x05email\x12#\n" +
@@ -451,13 +451,13 @@ const file_user_proto_rawDesc = "" +
 	"\x03msg\x18\x01 \x01(\tR\x03msg\"\x15\n" +
 	"\x13GetCustomersRequest\"Z\n" +
 	"\x14GetCustomersResponse\x12B\n" +
-	"\tcustomers\x18\x01 \x03(\v2$.auth_service.CreateCustomerResponseR\tcustomers2\x83\x03\n" +
+	"\tcustomers\x18\x01 \x03(\v2$.user_service.CreateCustomerResponseR\tcustomers2\x83\x03\n" +
 	"\vUserService\x12[\n" +
-	"\x0eCreateCustomer\x12#.auth_service.CreateCustomerRequest\x1a$.auth_service.CreateCustomerResponse\x12c\n" +
-	"\x12GetCustomerByEmail\x12'.auth_service.GetCustomerByEmailRequest\x1a$.auth_service.CreateCustomerResponse\x12U\n" +
-	"\fGetCustomers\x12!.auth_service.GetCustomersRequest\x1a\".auth_service.GetCustomersResponse\x12[\n" +
-	"\x0eDeleteCustomer\x12#.auth_service.DeleteCustomerRequest\x1a$.auth_service.DeleteCustomerResponseB\xae\x01\n" +
-	"\x10com.auth_serviceB\tUserProtoP\x01ZCgithub.com/Likhon22/ecom_microservice/auth_service/proto/gen;userpb\xa2\x02\x03AXX\xaa\x02\vAuthService\xca\x02\vAuthService\xe2\x02\x17AuthService\\GPBMetadata\xea\x02\vAuthServiceb\x06proto3"
+	"\x0eCreateCustomer\x12#.user_service.CreateCustomerRequest\x1a$.user_service.CreateCustomerResponse\x12c\n" +
+	"\x12GetCustomerByEmail\x12'.user_service.GetCustomerByEmailRequest\x1a$.user_service.CreateCustomerResponse\x12U\n" +
+	"\fGetCustomers\x12!.user_service.GetCustomersRequest\x1a\".user_service.GetCustomersResponse\x12[\n" +
+	"\x0eDeleteCustomer\x12#.user_service.DeleteCustomerRequest\x1a$.user_service.DeleteCustomerResponseB\xae\x01\n" +
+	"\x10com.user_serviceB\tUserProtoP\x01ZCgithub.com/Likhon22/ecom_microservice/auth_service/proto/gen;userpb\xa2\x02\x03UXX\xaa\x02\vUserService\xca\x02\vUserService\xe2\x02\x17UserService\\GPBMetadata\xea\x02\vUserServiceb\x06proto3"
 
 var (
 	file_user_proto_rawDescOnce sync.Once
@@ -473,24 +473,24 @@ func file_user_proto_rawDescGZIP() []byte {
 
 var file_user_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
 var file_user_proto_goTypes = []any{
-	(*CreateCustomerRequest)(nil),     // 0: auth_service.CreateCustomerRequest
-	(*DeleteCustomerRequest)(nil),     // 1: auth_service.DeleteCustomerRequest
-	(*GetCustomerByEmailRequest)(nil), // 2: auth_service.GetCustomerByEmailRequest
-	(*CreateCustomerResponse)(nil),    // 3: auth_service.CreateCustomerResponse
-	(*DeleteCustomerResponse)(nil),    // 4: auth_service.DeleteCustomerResponse
-	(*GetCustomersRequest)(nil),       // 5: auth_service.GetCustomersRequest
-	(*GetCustomersResponse)(nil),      // 6: auth_service.GetCustomersResponse
+	(*CreateCustomerRequest)(nil),     // 0: user_service.CreateCustomerRequest
+	(*DeleteCustomerRequest)(nil),     // 1: user_service.DeleteCustomerRequest
+	(*GetCustomerByEmailRequest)(nil), // 2: user_service.GetCustomerByEmailRequest
+	(*CreateCustomerResponse)(nil),    // 3: user_service.CreateCustomerResponse
+	(*DeleteCustomerResponse)(nil),    // 4: user_service.DeleteCustomerResponse
+	(*GetCustomersRequest)(nil),       // 5: user_service.GetCustomersRequest
+	(*GetCustomersResponse)(nil),      // 6: user_service.GetCustomersResponse
 }
 var file_user_proto_depIdxs = []int32{
-	3, // 0: auth_service.GetCustomersResponse.customers:type_name -> auth_service.CreateCustomerResponse
-	0, // 1: auth_service.UserService.CreateCustomer:input_type -> auth_service.CreateCustomerRequest
-	2, // 2: auth_service.UserService.GetCustomerByEmail:input_type -> auth_service.GetCustomerByEmailRequest
-	5, // 3: auth_service.UserService.GetCustomers:input_type -> auth_service.GetCustomersRequest
-	1, // 4: auth_service.UserService.DeleteCustomer:input_type -> auth_service.DeleteCustomerRequest
-	3, // 5: auth_service.UserService.CreateCustomer:output_type -> auth_service.CreateCustomerResponse
-	3, // 6: auth_service.UserService.GetCustomerByEmail:output_type -> auth_service.CreateCustomerResponse
-	6, // 7: auth_service.UserService.GetCustomers:output_type -> auth_service.GetCustomersResponse
-	4, // 8: auth_service.UserService.DeleteCustomer:output_type -> auth_service.DeleteCustomerResponse
+	3, // 0: user_service.GetCustomersResponse.customers:type_name -> user_service.CreateCustomerResponse
+	0, // 1: user_service.UserService.CreateCustomer:input_type -> user_service.CreateCustomerRequest
+	2, // 2: user_service.UserService.GetCustomerByEmail:input_type -> user_service.GetCustomerByEmailRequest
+	5, // 3: user_service.UserService.GetCustomers:input_type -> user_service.GetCustomersRequest
+	1, // 4: user_service.UserService.DeleteCustomer:input_type -> user_service.DeleteCustomerRequest
+	3, // 5: user_service.UserService.CreateCustomer:output_type -> user_service.CreateCustomerResponse
+	3, // 6: user_service.UserService.GetCustomerByEmail:output_type -> user_service.CreateCustomerResponse
+	6, // 7: user_service.UserService.GetCustomers:output_type -> user_service.GetCustomersResponse
+	4, // 8: user_service.UserService.DeleteCustomer:output_type -> user_service.DeleteCustomerResponse
 	5, // [5:9] is the sub-list for method output_type
 	1, // [1:5] is the sub-list for method input_type
 	1, // [1:1] is the sub-list for extension type_name

@@ -37,6 +37,15 @@ func (h *handler) CreateCustomer(ctx context.Context, req *userpb.CreateCustomer
 	}
 	return result, nil
 }
+func (h *handler) GetCustomerByEmail(ctx context.Context, req *userpb.GetCustomerByEmailRequest) (*userpb.CreateCustomerResponse, error) {
+
+	result, err := h.service.GetCustomerByEmail(ctx, req.Email)
+	if err != nil {
+		return nil, mapError(err)
+
+	}
+	return result, nil
+}
 func mapError(err error) error {
 	// tighten later to unwrap custom errors; placeholder maps to Internal
 	return status.Errorf(codes.Internal, err.Error())

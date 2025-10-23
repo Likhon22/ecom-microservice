@@ -10,7 +10,7 @@ import (
 
 type Service interface {
 	CreateCustomer(ctx context.Context, payload types.CreateCustomerInput) (*userpb.CreateCustomerResponse, error)
-	// GetCustomerByEmail(ctx context.Context, email string) (*types.CreateCustomerResult, error)
+	GetCustomerByEmail(ctx context.Context, email string) (*userpb.CreateCustomerResponse, error)
 	// GetCustomers(ctx context.Context) ([]*types.CreateCustomerResult, error)
 	// DeleteCustomer(ctx context.Context, email string) (*types.DeleteCustomerResult, error)
 }
@@ -41,4 +41,15 @@ func (s *service) CreateCustomer(ctx context.Context, payload types.CreateCustom
 	}
 	return res, nil
 
+}
+func (s *service) GetCustomerByEmail(ctx context.Context, email string) (*userpb.CreateCustomerResponse, error) {
+	req := &userpb.GetCustomerByEmailRequest{
+		Email: email,
+	}
+	res, err := s.userClient.GetCustomerByEmail(ctx, req)
+	if err != nil {
+		return nil, fmt.Errorf("user service create: %w", err)
+
+	}
+	return res, nil
 }

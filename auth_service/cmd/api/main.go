@@ -7,6 +7,7 @@ import (
 	"auth_service/internal/config"
 	"auth_service/internal/services/auth"
 	userpb "auth_service/proto/gen"
+
 	"context"
 	"log"
 	"os/signal"
