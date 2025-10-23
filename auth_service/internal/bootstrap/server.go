@@ -1,36 +1,38 @@
 package bootstrap
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net"
-	"os"
-	"os/signal"
-	"syscall"
 
 	"google.golang.org/grpc"
 )
 
-type server struct {
+type Server struct {
 	addr       string
 	grpcServer *grpc.Server
 	lis        net.Listener
 }
 
-func NewServer(addr string) (*server, error) {
+func NewServer(addr string) (*Server, error) {
 	lis, err := net.Listen("tcp", addr)
 	if err != nil {
 		return nil, fmt.Errorf("failed to listen: %w", err)
 	}
 	grpcServer := grpc.NewServer()
-	return &server{
+	return &Server{
 		addr:       addr,
 		grpcServer: grpcServer,
 		lis:        lis,
 	}, nil
 
 }
-func (s *server) StartServer() {
+func (s *Server) GRPCServer() *grpc.Server {
+	return s.grpcServer
+
+}
+func (s *Server) StartServer(ctx context.Context) {
 
 	go func() {
 		fmt.Printf("gRPC server listening at %s\n", s.addr)
@@ -38,9 +40,7 @@ func (s *server) StartServer() {
 			log.Fatal("failed to server grpc", err)
 		}
 	}()
-	stop := make(chan os.Signal, 1)
-	signal.Notify(stop, os.Interrupt, syscall.SIGTERM)
-	<-stop
+	<-ctx.Done()
 	fmt.Println("shutting down the server")
 	s.grpcServer.GracefulStop()
 
