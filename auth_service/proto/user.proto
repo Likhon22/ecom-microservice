@@ -1,7 +1,7 @@
 syntax = "proto3";
 
-package user_service;
-
+package auth_service;
+option go_package = "github.com/Likhon22/ecom_microservice/auth_service/proto/gen;userpb";
 import "validate/validate.proto";
 
 service UserService {

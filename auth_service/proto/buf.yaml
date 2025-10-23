@@ -1,0 +1,10 @@
+version: v1
+name: buf.build/likhon22/auth_service
+deps:
+  - buf.build/envoyproxy/protoc-gen-validate
+lint:
+  use:
+    - DEFAULT
+breaking:
+  use:
+    - FILE
