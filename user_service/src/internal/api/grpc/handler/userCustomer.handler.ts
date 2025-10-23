@@ -2,6 +2,7 @@ import type { ServerUnaryCall, sendUnaryData } from '@grpc/grpc-js';
 import type { UserCustomerService } from '../../../service/userCustomer.service.js';
 import {
   CreateCustomerResponse,
+  CustomerCredentialsResponse,
   DeleteCustomerRequest,
   DeleteCustomerResponse,
   GetCustomersResponse,
@@ -76,6 +77,19 @@ export class UserCustomerGrpcHandler {
       callback(null, msg);
     } catch (error) {
       callback(mapGrpcError(error), null);
+    }
+  }
+  async getCustomerCredentials(
+    call: ServerUnaryCall<GetCustomerByEmailRequest, unknown>,
+    callback: sendUnaryData<CustomerCredentialsResponse>,
+  ) {
+    try {
+      const credentials = await this.service.getCustomerCredentials(
+        call.request.email,
+      );
+      return callback(null, credentials);
+    } catch (err) {
+      callback(mapGrpcError(err), null);
     }
   }
 }

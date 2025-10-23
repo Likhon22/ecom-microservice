@@ -8,11 +8,14 @@ import type { TCustomer } from '../domain/customer.domain.js';
 import { hashPassword } from '../utils/hashPassword.js';
 import ApiError from '../error/appError.js';
 import mongoose from 'mongoose';
+import { CustomerCredentialsResponse } from '../../proto/gen/user_pb.js';
+import { toTimestamp } from '../utils/dateToTimeStamp.js';
 
 export interface UserCustomerServiceInterface {
   create(user: UserCustomerRequestDto): Promise<UserCustomerResponseDto>;
   get(): Promise<UserCustomerResponseDto[]>;
   getByEmail(email: string): Promise<UserCustomerResponseDto>;
+  getCustomerCredentials(email: string): Promise<CustomerCredentialsResponse>;
 }
 
 export class UserCustomerService implements UserCustomerServiceInterface {
@@ -115,5 +118,29 @@ export class UserCustomerService implements UserCustomerServiceInterface {
       throw new ApiError(404, 'customer not found');
     }
     return 'user deleted successfully';
+  }
+  async getCustomerCredentials(
+    email: string,
+  ): Promise<CustomerCredentialsResponse> {
+    if (email === '') {
+      throw new ApiError(400, 'there is no email');
+    }
+    const customer = await this.repo.getByEmail(email);
+    if (!customer) {
+      throw new ApiError(404, 'customer not found');
+    }
+
+    const passwordChangeTimestamp = toTimestamp(
+      customer.user.passwordChangedAt,
+    );
+    const response = new CustomerCredentialsResponse({
+      password: customer.user.password,
+      email: customer.email,
+      isDeleted: customer.user.isDeleted,
+      passwordChangedAt: passwordChangeTimestamp,
+      role: customer.user.role,
+      status: customer.user.status,
+    });
+    return response;
   }
 }

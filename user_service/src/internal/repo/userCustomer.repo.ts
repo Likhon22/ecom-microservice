@@ -55,8 +55,11 @@ export class UserCustomerRepo implements UserCustomerRepoInterface {
   }
   async getByEmail(email: string): Promise<TCustomerPopulated | null> {
     const customer = await this.customerModel
-      .findOne({ email: email })
-      .populate('user', 'role status isDeleted')
+      .findOne({ email })
+      .populate({
+        path: 'user',
+        select: 'password role status isDeleted passwordChangedAt',
+      })
       .lean<TCustomerPopulated>();
     return customer;
   }

@@ -3,12 +3,13 @@ syntax = "proto3";
 package user_service;
 
 import "validate/validate.proto";
-
+import "google/protobuf/timestamp.proto";
 service UserService {
   rpc CreateCustomer (CreateCustomerRequest) returns (CreateCustomerResponse);
   rpc GetCustomerByEmail (GetCustomerByEmailRequest) returns (CreateCustomerResponse);
   rpc GetCustomers (GetCustomersRequest) returns (GetCustomersResponse);
   rpc DeleteCustomer (DeleteCustomerRequest) returns (DeleteCustomerResponse);
+  rpc GetCustomerCredentials (GetCustomerByEmailRequest) returns (CustomerCredentialsResponse);
 }
 
 message CreateCustomerRequest {
@@ -41,4 +42,13 @@ message DeleteCustomerResponse {
 message GetCustomersRequest {}
 message GetCustomersResponse {
   repeated CreateCustomerResponse customers = 1;
+}
+
+message CustomerCredentialsResponse {
+ string email=1;
+ string password=2;
+ string status =3;
+ string role=4;
+ bool is_deleted =5;
+ google.protobuf.Timestamp password_changed_at=6;
 }

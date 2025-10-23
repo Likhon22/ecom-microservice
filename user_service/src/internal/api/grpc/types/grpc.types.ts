@@ -1,6 +1,7 @@
 import type {
   CreateCustomerRequest,
   CreateCustomerResponse,
+  CustomerCredentialsResponse,
   DeleteCustomerRequest,
   DeleteCustomerResponse,
   GetCustomerByEmailRequest,
@@ -21,5 +22,10 @@ export type UserServiceHandlers = {
   DeleteCustomer: handleUnaryCall<
     DeleteCustomerRequest,
     DeleteCustomerResponse
+  >;
+
+  GetCustomerCredentials: handleUnaryCall<
+    GetCustomerByEmailRequest,
+    CustomerCredentialsResponse
   >;
 };

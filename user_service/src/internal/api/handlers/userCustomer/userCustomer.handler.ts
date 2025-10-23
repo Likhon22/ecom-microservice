@@ -37,4 +37,13 @@ export class UserCustomerHandler {
       statusCode: 200,
     });
   }
+  async getCredentials(req: Request, res: Response) {
+    const email = req.params.email as string;
+    const customers = await this.service.getCustomerCredentials(email);
+    sendResponse(res, {
+      message: 'customer credentials fetched successfully',
+      data: customers,
+      statusCode: 200,
+    });
+  }
 }
