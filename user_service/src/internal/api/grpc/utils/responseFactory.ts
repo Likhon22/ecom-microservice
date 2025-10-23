@@ -12,5 +12,6 @@ export function toCreateCustomerResponse(
     phone: dto.phone ?? '',
     address: dto.address ?? '',
     avatarUrl: dto.avatarUrl ?? '',
+    isDeleted: dto.isDeleted,
   });
 }

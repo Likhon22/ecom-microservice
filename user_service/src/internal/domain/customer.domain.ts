@@ -11,5 +11,5 @@ export interface TCustomer {
   email: string;
 }
 export interface TCustomerPopulated extends Omit<TCustomer, 'user'> {
-  user: Pick<TUser, 'role' | 'status'>;
+  user: Pick<TUser, 'role' | 'status' | 'isDeleted'>;
 }

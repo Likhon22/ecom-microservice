@@ -1,0 +1,1 @@
+buf export buf.build/envoyproxy/protoc-gen-validate -o validate

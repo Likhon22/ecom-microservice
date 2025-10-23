@@ -14,6 +14,7 @@ export interface UserCustomerRepoInterface {
   ): Promise<TCustomer>;
   get(): Promise<TCustomerPopulated[]>;
   getByEmail(id: string): Promise<TCustomerPopulated | null>;
+  deleteUser(email: string): Promise<TUser | null>;
 }
 
 export class UserCustomerRepo implements UserCustomerRepoInterface {
@@ -55,8 +56,14 @@ export class UserCustomerRepo implements UserCustomerRepoInterface {
   async getByEmail(email: string): Promise<TCustomerPopulated | null> {
     const customer = await this.customerModel
       .findOne({ email: email })
-      .populate('user', 'role status')
+      .populate('user', 'role status isDeleted')
       .lean<TCustomerPopulated>();
     return customer;
+  }
+  async deleteUser(email: string): Promise<TUser | null> {
+    const user = await this.userModel
+      .findOneAndUpdate({ email }, { isDeleted: true }, { new: true })
+      .lean<TUser>();
+    return user;
   }
 }

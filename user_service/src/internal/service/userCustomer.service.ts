@@ -55,6 +55,7 @@ export class UserCustomerService implements UserCustomerServiceInterface {
       return {
         name: createdCustomer.name,
         email: createdCustomer.email,
+        isDeleted: user.isDeleted!,
         role: createdUser.role,
         status: createdUser.status,
         ...(createdCustomer.address && { address: createdCustomer.address }),
@@ -77,6 +78,7 @@ export class UserCustomerService implements UserCustomerServiceInterface {
       email: customer.email,
       role: customer.user.role,
       status: customer.user.status,
+      isDeleted: customer.user.isDeleted,
       ...(customer.phone && { phone: customer.phone }),
       ...(customer.avatarUrl && { avatarUrl: customer.avatarUrl }),
       ...(customer.address && { address: customer.address }),
@@ -90,14 +92,28 @@ export class UserCustomerService implements UserCustomerServiceInterface {
     if (!customer) {
       throw new ApiError(404, 'customer not found');
     }
+    if (customer.user.isDeleted === true) {
+      throw new ApiError(404, 'customer not found');
+    }
     return {
       name: customer.name,
       email: customer.email,
       role: customer.user.role,
       status: customer.user.status,
+      isDeleted: customer.user.isDeleted,
       ...(customer.phone && { phone: customer.phone }),
       ...(customer.avatarUrl && { avatarUrl: customer.avatarUrl }),
       ...(customer.address && { address: customer.address }),
     };
+  }
+  async deleteUser(email: string): Promise<string> {
+    if (email === '') {
+      throw new ApiError(400, 'there is no email');
+    }
+    const customer = await this.repo.deleteUser(email);
+    if (!customer) {
+      throw new ApiError(404, 'customer not found');
+    }
+    return 'user deleted successfully';
   }
 }

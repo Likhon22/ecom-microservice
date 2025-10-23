@@ -15,4 +15,5 @@ export interface UserCustomerResponseDto {
   email: string;
   role: 'admin' | 'customer' | 'superAdmin';
   status: 'in-progress' | 'blocked';
+  isDeleted: boolean;
 }

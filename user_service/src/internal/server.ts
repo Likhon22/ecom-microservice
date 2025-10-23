@@ -43,6 +43,7 @@ export async function startGrpcServer(service: UserCustomerService) {
     CreateCustomer: handler.createCustomer.bind(handler),
     GetCustomerByEmail: handler.getCustomerByEmail.bind(handler),
     GetCustomers: handler.getCustomers.bind(handler),
+    DeleteCustomer: handler.deleteCUstomer.bind(handler),
   });
   const address = `0.0.0.0:${config.grpc_port ?? '5001'}`;
   await new Promise<void>((resolve, reject) => {

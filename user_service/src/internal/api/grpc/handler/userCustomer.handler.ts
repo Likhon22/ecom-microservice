@@ -2,6 +2,8 @@ import type { ServerUnaryCall, sendUnaryData } from '@grpc/grpc-js';
 import type { UserCustomerService } from '../../../service/userCustomer.service.js';
 import {
   CreateCustomerResponse,
+  DeleteCustomerRequest,
+  DeleteCustomerResponse,
   GetCustomersResponse,
   type CreateCustomerRequest,
   type GetCustomerByEmailRequest,
@@ -60,6 +62,20 @@ export class UserCustomerGrpcHandler {
       callback(null, response);
     } catch (err) {
       callback(mapGrpcError(err), null);
+    }
+  }
+  async deleteCUstomer(
+    call: ServerUnaryCall<DeleteCustomerRequest, unknown>,
+    callback: sendUnaryData<DeleteCustomerResponse>,
+  ) {
+    try {
+      const response = await this.service.deleteUser(call.request.email);
+      const msg = new DeleteCustomerResponse({
+        msg: response,
+      });
+      callback(null, msg);
+    } catch (error) {
+      callback(mapGrpcError(error), null);
     }
   }
 }
