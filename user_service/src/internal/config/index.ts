@@ -8,4 +8,5 @@ export default {
   db_url: process.env.DB_URL,
   salt_round: process.env.SALTROUND,
   node_env: process.env.NODE_ENV,
+  grpc_port: process.env.GRPC_PORT,
 };

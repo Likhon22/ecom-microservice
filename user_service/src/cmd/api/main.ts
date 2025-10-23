@@ -4,8 +4,8 @@ import express, {
   type Request,
   type Response,
 } from 'express';
-import { connectNodeAdapter } from '@bufbuild/connect-node';
-import startServer from '../../internal/server.js';
+
+import startServer, { startGrpcServer } from '../../internal/server.js';
 import { connectDB } from '../../internal/infra/db/connection.js';
 import { UserCustomerRepo } from '../../internal/repo/userCustomer.repo.js';
 import { UserModel } from '../../internal/models/user.model.js';
@@ -15,8 +15,6 @@ import { UserCustomerService } from '../../internal/service/userCustomer.service
 import { registerRoutes } from '../../internal/api/routes/index.js';
 import { Middleware } from '../../internal/api/middleware/index.js';
 import { CustomerModel } from '../../internal/models/customer.model.js';
-import { UserCustomerGrpcHandler } from '../../internal/api/grpc/grpcHandler/userCustomer.grpc.js';
-import { registerGrpcRoutes } from '../../internal/api/grpc/grpcHandler/grpcRoutes.js';
 
 const app: Application = express();
 
@@ -43,17 +41,6 @@ async function main() {
 
     //grpc handler
 
-    const userCustomerGrpcHandler = new UserCustomerGrpcHandler(
-      userCustomerService,
-    );
-
-    //grpc routes
-    app.use(
-      '/grpc',
-      connectNodeAdapter({
-        routes: router => registerGrpcRoutes(router, userCustomerGrpcHandler),
-      }),
-    );
     app.use(express.json({ type: 'application/json' }));
     app.use(express.urlencoded({ extended: true }));
     // rest routes
@@ -63,8 +50,9 @@ async function main() {
 
     // not found routes
     app.use(mw.noRoutesFound);
-
+    await startGrpcServer(userCustomerService);
     await startServer(app);
+
     console.log('Server is running with db mongodb');
   } catch (err: any) {
     console.log('Failed to start the server', err);
