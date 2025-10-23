@@ -1014,3 +1014,145 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = GetCustomersResponseValidationError{}
+
+// Validate checks the field values on CustomerCredentialsResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *CustomerCredentialsResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on CustomerCredentialsResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// CustomerCredentialsResponseMultiError, or nil if none found.
+func (m *CustomerCredentialsResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *CustomerCredentialsResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Email
+
+	// no validation rules for Password
+
+	// no validation rules for Status
+
+	// no validation rules for Role
+
+	// no validation rules for IsDeleted
+
+	if all {
+		switch v := interface{}(m.GetPasswordChangedAt()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, CustomerCredentialsResponseValidationError{
+					field:  "PasswordChangedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, CustomerCredentialsResponseValidationError{
+					field:  "PasswordChangedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetPasswordChangedAt()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return CustomerCredentialsResponseValidationError{
+				field:  "PasswordChangedAt",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if len(errors) > 0 {
+		return CustomerCredentialsResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// CustomerCredentialsResponseMultiError is an error wrapping multiple
+// validation errors returned by CustomerCredentialsResponse.ValidateAll() if
+// the designated constraints aren't met.
+type CustomerCredentialsResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m CustomerCredentialsResponseMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m CustomerCredentialsResponseMultiError) AllErrors() []error { return m }
+
+// CustomerCredentialsResponseValidationError is the validation error returned
+// by CustomerCredentialsResponse.Validate if the designated constraints
+// aren't met.
+type CustomerCredentialsResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e CustomerCredentialsResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e CustomerCredentialsResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e CustomerCredentialsResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e CustomerCredentialsResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e CustomerCredentialsResponseValidationError) ErrorName() string {
+	return "CustomerCredentialsResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e CustomerCredentialsResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sCustomerCredentialsResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = CustomerCredentialsResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = CustomerCredentialsResponseValidationError{}

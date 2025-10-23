@@ -19,10 +19,11 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	UserService_CreateCustomer_FullMethodName     = "/user_service.UserService/CreateCustomer"
-	UserService_GetCustomerByEmail_FullMethodName = "/user_service.UserService/GetCustomerByEmail"
-	UserService_GetCustomers_FullMethodName       = "/user_service.UserService/GetCustomers"
-	UserService_DeleteCustomer_FullMethodName     = "/user_service.UserService/DeleteCustomer"
+	UserService_CreateCustomer_FullMethodName         = "/user_service.UserService/CreateCustomer"
+	UserService_GetCustomerByEmail_FullMethodName     = "/user_service.UserService/GetCustomerByEmail"
+	UserService_GetCustomers_FullMethodName           = "/user_service.UserService/GetCustomers"
+	UserService_DeleteCustomer_FullMethodName         = "/user_service.UserService/DeleteCustomer"
+	UserService_GetCustomerCredentials_FullMethodName = "/user_service.UserService/GetCustomerCredentials"
 )
 
 // UserServiceClient is the client API for UserService service.
@@ -33,6 +34,7 @@ type UserServiceClient interface {
 	GetCustomerByEmail(ctx context.Context, in *GetCustomerByEmailRequest, opts ...grpc.CallOption) (*CreateCustomerResponse, error)
 	GetCustomers(ctx context.Context, in *GetCustomersRequest, opts ...grpc.CallOption) (*GetCustomersResponse, error)
 	DeleteCustomer(ctx context.Context, in *DeleteCustomerRequest, opts ...grpc.CallOption) (*DeleteCustomerResponse, error)
+	GetCustomerCredentials(ctx context.Context, in *GetCustomerByEmailRequest, opts ...grpc.CallOption) (*CustomerCredentialsResponse, error)
 }
 
 type userServiceClient struct {
@@ -83,6 +85,16 @@ func (c *userServiceClient) DeleteCustomer(ctx context.Context, in *DeleteCustom
 	return out, nil
 }
 
+func (c *userServiceClient) GetCustomerCredentials(ctx context.Context, in *GetCustomerByEmailRequest, opts ...grpc.CallOption) (*CustomerCredentialsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CustomerCredentialsResponse)
+	err := c.cc.Invoke(ctx, UserService_GetCustomerCredentials_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility.
@@ -91,6 +103,7 @@ type UserServiceServer interface {
 	GetCustomerByEmail(context.Context, *GetCustomerByEmailRequest) (*CreateCustomerResponse, error)
 	GetCustomers(context.Context, *GetCustomersRequest) (*GetCustomersResponse, error)
 	DeleteCustomer(context.Context, *DeleteCustomerRequest) (*DeleteCustomerResponse, error)
+	GetCustomerCredentials(context.Context, *GetCustomerByEmailRequest) (*CustomerCredentialsResponse, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -112,6 +125,9 @@ func (UnimplementedUserServiceServer) GetCustomers(context.Context, *GetCustomer
 }
 func (UnimplementedUserServiceServer) DeleteCustomer(context.Context, *DeleteCustomerRequest) (*DeleteCustomerResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteCustomer not implemented")
+}
+func (UnimplementedUserServiceServer) GetCustomerCredentials(context.Context, *GetCustomerByEmailRequest) (*CustomerCredentialsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetCustomerCredentials not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 func (UnimplementedUserServiceServer) testEmbeddedByValue()                     {}
@@ -206,6 +222,24 @@ func _UserService_DeleteCustomer_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_GetCustomerCredentials_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetCustomerByEmailRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).GetCustomerCredentials(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_GetCustomerCredentials_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).GetCustomerCredentials(ctx, req.(*GetCustomerByEmailRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -228,6 +262,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteCustomer",
 			Handler:    _UserService_DeleteCustomer_Handler,
+		},
+		{
+			MethodName: "GetCustomerCredentials",
+			Handler:    _UserService_GetCustomerCredentials_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

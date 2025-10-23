@@ -1,7 +1,8 @@
 package main
 
 import (
-	authhanlder "auth_service/internal/api/handler/auth"
+	authhandler "auth_service/internal/api/handler/auth"
+	userhanlder "auth_service/internal/api/handler/user"
 	"auth_service/internal/bootstrap"
 	"auth_service/internal/clients/usersvc"
 	"auth_service/internal/config"
@@ -37,8 +38,11 @@ func main() {
 		}
 	}()
 	userService := auth.NewService(userClient)
-	userHandler := authhanlder.NewHandler(userService)
+	userHandler := userhanlder.NewHandler(userService)
+	// auth handler
+	authHandler := authhandler.NewHandler(userService)
 	userpb.RegisterUserServiceServer(srv.GRPCServer(), userHandler)
+	userpb.RegisterAuthServiceServer(srv.GRPCServer(), authHandler)
 	srv.StartServer(ctx)
 
 }

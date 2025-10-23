@@ -6,6 +6,8 @@ import (
 	userpb "auth_service/proto/gen"
 	"context"
 	"fmt"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 type Service interface {
@@ -13,6 +15,7 @@ type Service interface {
 	GetCustomerByEmail(ctx context.Context, email string) (*userpb.CreateCustomerResponse, error)
 	// GetCustomers(ctx context.Context) ([]*types.CreateCustomerResult, error)
 	// DeleteCustomer(ctx context.Context, email string) (*types.DeleteCustomerResult, error)
+	Login(ctx context.Context, email, password string) (string, error)
 }
 type service struct {
 	userClient usersvc.Client
@@ -52,4 +55,17 @@ func (s *service) GetCustomerByEmail(ctx context.Context, email string) (*userpb
 
 	}
 	return res, nil
+}
+
+func (s *service) Login(ctx context.Context, email, password string) (string, error) {
+	credentials, err := s.userClient.GetCustomerCredentials(ctx, &userpb.GetCustomerByEmailRequest{Email: email})
+	if err != nil {
+		return "", fmt.Errorf("user service create: %w", err)
+	}
+
+	if err := bcrypt.CompareHashAndPassword([]byte(credentials.Password), []byte(password)); err != nil {
+
+		return "", fmt.Errorf("password does not match: %w", err)
+	}
+	return "successfully login", nil
 }

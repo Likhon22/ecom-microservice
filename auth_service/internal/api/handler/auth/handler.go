@@ -1,17 +1,14 @@
-package authhanlder
+package authhandler
 
 import (
 	"auth_service/internal/services/auth"
-	"auth_service/internal/types"
+	"auth_service/internal/utils"
 	userpb "auth_service/proto/gen"
 	"context"
-
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
 
 type handler struct {
-	userpb.UnimplementedUserServiceServer
+	userpb.UnimplementedAuthServiceServer
 	service auth.Service
 }
 
@@ -20,33 +17,12 @@ func NewHandler(service auth.Service) *handler {
 		service: service,
 	}
 }
+func (h *handler) Login(ctx context.Context, req *userpb.LoginRequest) (*userpb.LoginResponse, error) {
 
-func (h *handler) CreateCustomer(ctx context.Context, req *userpb.CreateCustomerRequest) (*userpb.CreateCustomerResponse, error) {
-
-	result, err := h.service.CreateCustomer(ctx, types.CreateCustomerInput{
-		Name:      req.GetName(),
-		Email:     req.GetEmail(),
-		Phone:     req.GetPhone(),
-		Password:  req.GetPassword(),
-		Address:   req.GetAddress(),
-		AvatarURL: req.GetAvatarUrl(),
-	})
+	result, err := h.service.Login(ctx, req.Email, req.Password)
 	if err != nil {
-		return nil, mapError(err)
+		return nil, utils.MapError(err)
 
 	}
-	return result, nil
-}
-func (h *handler) GetCustomerByEmail(ctx context.Context, req *userpb.GetCustomerByEmailRequest) (*userpb.CreateCustomerResponse, error) {
-
-	result, err := h.service.GetCustomerByEmail(ctx, req.Email)
-	if err != nil {
-		return nil, mapError(err)
-
-	}
-	return result, nil
-}
-func mapError(err error) error {
-	// tighten later to unwrap custom errors; placeholder maps to Internal
-	return status.Errorf(codes.Internal, err.Error())
+	return &userpb.LoginResponse{Message: result}, nil
 }

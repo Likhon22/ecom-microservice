@@ -10,6 +10,7 @@ import (
 	_ "github.com/envoyproxy/protoc-gen-validate/validate"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -418,12 +419,96 @@ func (x *GetCustomersResponse) GetCustomers() []*CreateCustomerResponse {
 	return nil
 }
 
+type CustomerCredentialsResponse struct {
+	state             protoimpl.MessageState `protogen:"open.v1"`
+	Email             string                 `protobuf:"bytes,1,opt,name=email,proto3" json:"email,omitempty"`
+	Password          string                 `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
+	Status            string                 `protobuf:"bytes,3,opt,name=status,proto3" json:"status,omitempty"`
+	Role              string                 `protobuf:"bytes,4,opt,name=role,proto3" json:"role,omitempty"`
+	IsDeleted         bool                   `protobuf:"varint,5,opt,name=is_deleted,json=isDeleted,proto3" json:"is_deleted,omitempty"`
+	PasswordChangedAt *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=password_changed_at,json=passwordChangedAt,proto3" json:"password_changed_at,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *CustomerCredentialsResponse) Reset() {
+	*x = CustomerCredentialsResponse{}
+	mi := &file_user_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CustomerCredentialsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CustomerCredentialsResponse) ProtoMessage() {}
+
+func (x *CustomerCredentialsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_user_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CustomerCredentialsResponse.ProtoReflect.Descriptor instead.
+func (*CustomerCredentialsResponse) Descriptor() ([]byte, []int) {
+	return file_user_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *CustomerCredentialsResponse) GetEmail() string {
+	if x != nil {
+		return x.Email
+	}
+	return ""
+}
+
+func (x *CustomerCredentialsResponse) GetPassword() string {
+	if x != nil {
+		return x.Password
+	}
+	return ""
+}
+
+func (x *CustomerCredentialsResponse) GetStatus() string {
+	if x != nil {
+		return x.Status
+	}
+	return ""
+}
+
+func (x *CustomerCredentialsResponse) GetRole() string {
+	if x != nil {
+		return x.Role
+	}
+	return ""
+}
+
+func (x *CustomerCredentialsResponse) GetIsDeleted() bool {
+	if x != nil {
+		return x.IsDeleted
+	}
+	return false
+}
+
+func (x *CustomerCredentialsResponse) GetPasswordChangedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.PasswordChangedAt
+	}
+	return nil
+}
+
 var File_user_proto protoreflect.FileDescriptor
 
 const file_user_proto_rawDesc = "" +
 	"\n" +
 	"\n" +
-	"user.proto\x12\fuser_service\x1a\x17validate/validate.proto\"\xc7\x01\n" +
+	"user.proto\x12\fuser_service\x1a\x17validate/validate.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc7\x01\n" +
 	"\x15CreateCustomerRequest\x12\x1b\n" +
 	"\x04name\x18\x01 \x01(\tB\a\xfaB\x04r\x02\x10\x01R\x04name\x12\x1d\n" +
 	"\x05email\x18\x02 \x01(\tB\a\xfaB\x04r\x02`\x01R\x05email\x12#\n" +
@@ -451,12 +536,21 @@ const file_user_proto_rawDesc = "" +
 	"\x03msg\x18\x01 \x01(\tR\x03msg\"\x15\n" +
 	"\x13GetCustomersRequest\"Z\n" +
 	"\x14GetCustomersResponse\x12B\n" +
-	"\tcustomers\x18\x01 \x03(\v2$.user_service.CreateCustomerResponseR\tcustomers2\x83\x03\n" +
+	"\tcustomers\x18\x01 \x03(\v2$.user_service.CreateCustomerResponseR\tcustomers\"\xe6\x01\n" +
+	"\x1bCustomerCredentialsResponse\x12\x14\n" +
+	"\x05email\x18\x01 \x01(\tR\x05email\x12\x1a\n" +
+	"\bpassword\x18\x02 \x01(\tR\bpassword\x12\x16\n" +
+	"\x06status\x18\x03 \x01(\tR\x06status\x12\x12\n" +
+	"\x04role\x18\x04 \x01(\tR\x04role\x12\x1d\n" +
+	"\n" +
+	"is_deleted\x18\x05 \x01(\bR\tisDeleted\x12J\n" +
+	"\x13password_changed_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\x11passwordChangedAt2\xf1\x03\n" +
 	"\vUserService\x12[\n" +
 	"\x0eCreateCustomer\x12#.user_service.CreateCustomerRequest\x1a$.user_service.CreateCustomerResponse\x12c\n" +
 	"\x12GetCustomerByEmail\x12'.user_service.GetCustomerByEmailRequest\x1a$.user_service.CreateCustomerResponse\x12U\n" +
 	"\fGetCustomers\x12!.user_service.GetCustomersRequest\x1a\".user_service.GetCustomersResponse\x12[\n" +
-	"\x0eDeleteCustomer\x12#.user_service.DeleteCustomerRequest\x1a$.user_service.DeleteCustomerResponseB\xae\x01\n" +
+	"\x0eDeleteCustomer\x12#.user_service.DeleteCustomerRequest\x1a$.user_service.DeleteCustomerResponse\x12l\n" +
+	"\x16GetCustomerCredentials\x12'.user_service.GetCustomerByEmailRequest\x1a).user_service.CustomerCredentialsResponseB\xae\x01\n" +
 	"\x10com.user_serviceB\tUserProtoP\x01ZCgithub.com/Likhon22/ecom_microservice/auth_service/proto/gen;userpb\xa2\x02\x03UXX\xaa\x02\vUserService\xca\x02\vUserService\xe2\x02\x17UserService\\GPBMetadata\xea\x02\vUserServiceb\x06proto3"
 
 var (
@@ -471,31 +565,36 @@ func file_user_proto_rawDescGZIP() []byte {
 	return file_user_proto_rawDescData
 }
 
-var file_user_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
+var file_user_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
 var file_user_proto_goTypes = []any{
-	(*CreateCustomerRequest)(nil),     // 0: user_service.CreateCustomerRequest
-	(*DeleteCustomerRequest)(nil),     // 1: user_service.DeleteCustomerRequest
-	(*GetCustomerByEmailRequest)(nil), // 2: user_service.GetCustomerByEmailRequest
-	(*CreateCustomerResponse)(nil),    // 3: user_service.CreateCustomerResponse
-	(*DeleteCustomerResponse)(nil),    // 4: user_service.DeleteCustomerResponse
-	(*GetCustomersRequest)(nil),       // 5: user_service.GetCustomersRequest
-	(*GetCustomersResponse)(nil),      // 6: user_service.GetCustomersResponse
+	(*CreateCustomerRequest)(nil),       // 0: user_service.CreateCustomerRequest
+	(*DeleteCustomerRequest)(nil),       // 1: user_service.DeleteCustomerRequest
+	(*GetCustomerByEmailRequest)(nil),   // 2: user_service.GetCustomerByEmailRequest
+	(*CreateCustomerResponse)(nil),      // 3: user_service.CreateCustomerResponse
+	(*DeleteCustomerResponse)(nil),      // 4: user_service.DeleteCustomerResponse
+	(*GetCustomersRequest)(nil),         // 5: user_service.GetCustomersRequest
+	(*GetCustomersResponse)(nil),        // 6: user_service.GetCustomersResponse
+	(*CustomerCredentialsResponse)(nil), // 7: user_service.CustomerCredentialsResponse
+	(*timestamppb.Timestamp)(nil),       // 8: google.protobuf.Timestamp
 }
 var file_user_proto_depIdxs = []int32{
 	3, // 0: user_service.GetCustomersResponse.customers:type_name -> user_service.CreateCustomerResponse
-	0, // 1: user_service.UserService.CreateCustomer:input_type -> user_service.CreateCustomerRequest
-	2, // 2: user_service.UserService.GetCustomerByEmail:input_type -> user_service.GetCustomerByEmailRequest
-	5, // 3: user_service.UserService.GetCustomers:input_type -> user_service.GetCustomersRequest
-	1, // 4: user_service.UserService.DeleteCustomer:input_type -> user_service.DeleteCustomerRequest
-	3, // 5: user_service.UserService.CreateCustomer:output_type -> user_service.CreateCustomerResponse
-	3, // 6: user_service.UserService.GetCustomerByEmail:output_type -> user_service.CreateCustomerResponse
-	6, // 7: user_service.UserService.GetCustomers:output_type -> user_service.GetCustomersResponse
-	4, // 8: user_service.UserService.DeleteCustomer:output_type -> user_service.DeleteCustomerResponse
-	5, // [5:9] is the sub-list for method output_type
-	1, // [1:5] is the sub-list for method input_type
-	1, // [1:1] is the sub-list for extension type_name
-	1, // [1:1] is the sub-list for extension extendee
-	0, // [0:1] is the sub-list for field type_name
+	8, // 1: user_service.CustomerCredentialsResponse.password_changed_at:type_name -> google.protobuf.Timestamp
+	0, // 2: user_service.UserService.CreateCustomer:input_type -> user_service.CreateCustomerRequest
+	2, // 3: user_service.UserService.GetCustomerByEmail:input_type -> user_service.GetCustomerByEmailRequest
+	5, // 4: user_service.UserService.GetCustomers:input_type -> user_service.GetCustomersRequest
+	1, // 5: user_service.UserService.DeleteCustomer:input_type -> user_service.DeleteCustomerRequest
+	2, // 6: user_service.UserService.GetCustomerCredentials:input_type -> user_service.GetCustomerByEmailRequest
+	3, // 7: user_service.UserService.CreateCustomer:output_type -> user_service.CreateCustomerResponse
+	3, // 8: user_service.UserService.GetCustomerByEmail:output_type -> user_service.CreateCustomerResponse
+	6, // 9: user_service.UserService.GetCustomers:output_type -> user_service.GetCustomersResponse
+	4, // 10: user_service.UserService.DeleteCustomer:output_type -> user_service.DeleteCustomerResponse
+	7, // 11: user_service.UserService.GetCustomerCredentials:output_type -> user_service.CustomerCredentialsResponse
+	7, // [7:12] is the sub-list for method output_type
+	2, // [2:7] is the sub-list for method input_type
+	2, // [2:2] is the sub-list for extension type_name
+	2, // [2:2] is the sub-list for extension extendee
+	0, // [0:2] is the sub-list for field type_name
 }
 
 func init() { file_user_proto_init() }
@@ -509,7 +608,7 @@ func file_user_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_user_proto_rawDesc), len(file_user_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   7,
+			NumMessages:   8,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

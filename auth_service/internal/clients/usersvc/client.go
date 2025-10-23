@@ -18,6 +18,7 @@ type Client interface {
 	GetCustomerByEmail(ctx context.Context, req *userpb.GetCustomerByEmailRequest) (*userpb.CreateCustomerResponse, error)
 	GetCustomers(ctx context.Context, req *userpb.GetCustomersRequest) (*userpb.GetCustomersResponse, error)
 	DeleteCustomer(ctx context.Context, req *userpb.DeleteCustomerRequest) (*userpb.DeleteCustomerResponse, error)
+	GetCustomerCredentials(ctx context.Context, req *userpb.GetCustomerByEmailRequest) (*userpb.CustomerCredentialsResponse, error)
 }
 
 func NewClient(ctx context.Context, addr string) (Client, func() error, error) {
@@ -37,6 +38,7 @@ func NewClient(ctx context.Context, addr string) (Client, func() error, error) {
 
 func (c *client) CreateCustomer(ctx context.Context, req *userpb.CreateCustomerRequest) (*userpb.CreateCustomerResponse, error) {
 	return c.stub.CreateCustomer(ctx, req)
+
 }
 
 func (c *client) GetCustomerByEmail(ctx context.Context, req *userpb.GetCustomerByEmailRequest) (*userpb.CreateCustomerResponse, error) {
@@ -49,4 +51,8 @@ func (c *client) GetCustomers(ctx context.Context, req *userpb.GetCustomersReque
 
 func (c *client) DeleteCustomer(ctx context.Context, req *userpb.DeleteCustomerRequest) (*userpb.DeleteCustomerResponse, error) {
 	return c.stub.DeleteCustomer(ctx, req)
+}
+
+func (c *client) GetCustomerCredentials(ctx context.Context, req *userpb.GetCustomerByEmailRequest) (*userpb.CustomerCredentialsResponse, error) {
+	return c.stub.GetCustomerCredentials(ctx, req)
 }
