@@ -1,6 +1,13 @@
 package bootstrap
 
 import (
+	authhandler "auth_service/internal/api/handler/auth"
+	userhandler "auth_service/internal/api/handler/user"
+	"auth_service/internal/clients/usersvc"
+	"auth_service/internal/config"
+	"auth_service/internal/infra/db"
+	"auth_service/internal/services/auth"
+	userpb "auth_service/proto/gen"
 	"context"
 	"fmt"
 	"log"
@@ -9,39 +16,65 @@ import (
 	"google.golang.org/grpc"
 )
 
-type Server struct {
-	addr       string
-	grpcServer *grpc.Server
-	lis        net.Listener
+type App struct {
+	server     *grpc.Server
+	cfg        *config.Config
+	listener   net.Listener
+	userClient usersvc.Client
 }
 
-func NewServer(addr string) (*Server, error) {
-	lis, err := net.Listen("tcp", addr)
+func InitializeApp(ctx context.Context, cfg *config.Config) (*App, error) {
+	// MongoDB
+	client, err := db.ConnectMongo(&cfg.DBCnf)
+	if err != nil {
+		return nil, fmt.Errorf("connect mongo: %w", err)
+	}
+	log.Println("MongoDB connected successfully")
+
+	// External gRPC client
+	userClient, closeUserClient, err := usersvc.NewClient(ctx, cfg.User_Service_Addr)
+	if err != nil {
+		return nil, fmt.Errorf("dial user service: %w", err)
+	}
+	go func() {
+		<-ctx.Done()
+		closeUserClient()
+		client.Disconnect(ctx)
+	}()
+
+	// Listener
+	lis, err := net.Listen("tcp", cfg.Addr)
 	if err != nil {
 		return nil, fmt.Errorf("failed to listen: %w", err)
 	}
-	grpcServer := grpc.NewServer()
-	return &Server{
-		addr:       addr,
-		grpcServer: grpcServer,
-		lis:        lis,
+
+	s := grpc.NewServer()
+
+	// Services and Handlers
+	userService := auth.NewService(userClient)
+	userHandler := userhandler.NewHandler(userService)
+	authHandler := authhandler.NewHandler(userService)
+
+	userpb.RegisterUserServiceServer(s, userHandler)
+	userpb.RegisterAuthServiceServer(s, authHandler)
+
+	return &App{
+		server:     s,
+		cfg:        cfg,
+		listener:   lis,
+		userClient: userClient,
 	}, nil
-
 }
-func (s *Server) GRPCServer() *grpc.Server {
-	return s.grpcServer
 
-}
-func (s *Server) StartServer(ctx context.Context) {
-
+func (a *App) Run(ctx context.Context) {
 	go func() {
-		fmt.Printf("gRPC server listening at %s\n", s.addr)
-		if err := s.grpcServer.Serve(s.lis); err != nil {
-			log.Fatal("failed to server grpc", err)
+		log.Printf("gRPC server listening at %s\n", a.cfg.Addr)
+		if err := a.server.Serve(a.listener); err != nil {
+			log.Fatalf("failed to serve gRPC: %v", err)
 		}
 	}()
-	<-ctx.Done()
-	fmt.Println("shutting down the server")
-	s.grpcServer.GracefulStop()
 
+	<-ctx.Done()
+	log.Println("shutting down server gracefully...")
+	a.server.GracefulStop()
 }
