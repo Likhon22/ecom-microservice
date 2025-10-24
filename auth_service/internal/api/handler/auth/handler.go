@@ -5,6 +5,10 @@ import (
 	"auth_service/internal/utils"
 	userpb "auth_service/proto/gen"
 	"context"
+	"time"
+
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
 )
 
 type handler struct {
@@ -19,10 +23,12 @@ func NewHandler(service auth.Service) *handler {
 }
 func (h *handler) Login(ctx context.Context, req *userpb.LoginRequest) (*userpb.LoginResponse, error) {
 
-	result, err := h.service.Login(ctx, req.Email, req.Password)
+	token, err := h.service.Login(ctx, req.Email, req.Password)
 	if err != nil {
 		return nil, utils.MapError(err)
 
 	}
-	return &userpb.LoginResponse{Message: result}, nil
+	md := metadata.Pairs("set-cookie", utils.BuildCookieHeader("access-token", token, 5*time.Minute, true, true))
+	grpc.SetHeader(ctx, md)
+	return &userpb.LoginResponse{Message: token}, nil
 }

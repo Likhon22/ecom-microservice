@@ -13,7 +13,8 @@ type Config struct {
 	ServiceName       string
 	Addr              string
 	User_Service_Addr string
-	DBCnf             DBConfig
+	DBCnf             *DBConfig
+	AuthCnf           *AuthConfig
 }
 
 var (
@@ -35,7 +36,8 @@ func loadConfig() {
 		ServiceName:       serviceName,
 		Addr:              addr,
 		User_Service_Addr: user_service_addr,
-		DBCnf:             *LoadDBConfig(),
+		DBCnf:             LoadDBConfig(),
+		AuthCnf:           LoadAuthConfig(),
 	}
 	validateMainConfig(config)
 }

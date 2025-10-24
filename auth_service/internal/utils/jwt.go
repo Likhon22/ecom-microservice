@@ -8,26 +8,24 @@ import (
 
 type MyClaim struct {
 	Email string
-	Name  string
 	Role  string
 	jwt.RegisteredClaims
 }
 
-func SignedToken(email, name, role, jwt_secret string, jwt_expire time.Duration) (string, error) {
+func SignedToken(email, role, jwt_secret string, jwt_expire time.Duration) (string, error) {
 	if jwt_expire == 0 {
 		jwt_expire = 5 * time.Minute
 	}
 	claims := MyClaim{
 		Email: email,
 		Role:  role,
-		Name:  name,
 		RegisteredClaims: jwt.RegisteredClaims{
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(jwt_expire)),
 		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	signedToken, err := token.SignedString(jwt_secret)
+	signedToken, err := token.SignedString([]byte(jwt_secret))
 	if err != nil {
 		return "", err
 

@@ -6,6 +6,7 @@ import (
 	"auth_service/internal/clients/usersvc"
 	"auth_service/internal/config"
 	"auth_service/internal/infra/db"
+	repo "auth_service/internal/repo/auth"
 	"auth_service/internal/services/auth"
 	userpb "auth_service/proto/gen"
 	"context"
@@ -25,11 +26,13 @@ type App struct {
 
 func InitializeApp(ctx context.Context, cfg *config.Config) (*App, error) {
 	// MongoDB
-	client, err := db.ConnectMongo(&cfg.DBCnf)
+	client, err := db.ConnectMongo(cfg.DBCnf)
 	if err != nil {
 		return nil, fmt.Errorf("connect mongo: %w", err)
 	}
 	log.Println("MongoDB connected successfully")
+	rdb := db.ConnectRedis("localhost:6379", 0)
+	log.Println("redis connected")
 
 	// External gRPC client
 	userClient, closeUserClient, err := usersvc.NewClient(ctx, cfg.User_Service_Addr)
@@ -40,6 +43,7 @@ func InitializeApp(ctx context.Context, cfg *config.Config) (*App, error) {
 		<-ctx.Done()
 		closeUserClient()
 		client.Disconnect(ctx)
+		rdb.Close()
 	}()
 
 	// Listener
@@ -50,8 +54,12 @@ func InitializeApp(ctx context.Context, cfg *config.Config) (*App, error) {
 
 	s := grpc.NewServer()
 
+	// repo
+
+	authRepo := repo.NewAuthRepo(client, rdb)
+
 	// Services and Handlers
-	userService := auth.NewService(userClient)
+	userService := auth.NewService(userClient, cfg.AuthCnf, authRepo)
 	userHandler := userhandler.NewHandler(userService)
 	authHandler := authhandler.NewHandler(userService)
 

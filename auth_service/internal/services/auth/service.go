@@ -2,7 +2,10 @@ package auth
 
 import (
 	"auth_service/internal/clients/usersvc"
+	"auth_service/internal/config"
+	repo "auth_service/internal/repo/auth"
 	"auth_service/internal/types"
+	"auth_service/internal/utils"
 	userpb "auth_service/proto/gen"
 	"context"
 	"fmt"
@@ -19,11 +22,15 @@ type Service interface {
 }
 type service struct {
 	userClient usersvc.Client
+	authCnf    *config.AuthConfig
+	authRepo   repo.AuthRepo
 }
 
-func NewService(userClient usersvc.Client) Service {
+func NewService(userClient usersvc.Client, authCnf *config.AuthConfig, authRepo repo.AuthRepo) Service {
 	return &service{
 		userClient: userClient,
+		authCnf:    authCnf,
+		authRepo:   authRepo,
 	}
 
 }
@@ -67,5 +74,20 @@ func (s *service) Login(ctx context.Context, email, password string) (string, er
 
 		return "", fmt.Errorf("password does not match: %w", err)
 	}
-	return "successfully login", nil
+
+	accessToken, err := utils.SignedToken(credentials.Email, credentials.Role, s.authCnf.Jwt_Access_Token_Secret, s.authCnf.Access_Token_Exp_Duration)
+	if err != nil {
+		return "", fmt.Errorf("token error: %w", err)
+	}
+
+	refreshToken, err := utils.SignedToken(credentials.Email, credentials.Role, s.authCnf.Jwt_Refresh_Token_Secret, s.authCnf.Refresh_Token_Exp_Duration)
+	if err != nil {
+		return "", fmt.Errorf("token error: %w", err)
+	}
+	if err := s.authRepo.Store(ctx, refreshToken, credentials.Email, s.authCnf.Refresh_Token_Exp_Duration); err != nil {
+
+		return "", fmt.Errorf("db error: %w", err)
+	}
+	wholeToken := fmt.Sprintf("refreshToken: %s accessToken: %s", refreshToken, accessToken)
+	return wholeToken, nil
 }
