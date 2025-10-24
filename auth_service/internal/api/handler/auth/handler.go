@@ -23,7 +23,7 @@ func NewHandler(service auth.Service) *handler {
 }
 func (h *handler) Login(ctx context.Context, req *userpb.LoginRequest) (*userpb.LoginResponse, error) {
 
-	token, err := h.service.Login(ctx, req.Email, req.Password)
+	token, err := h.service.Login(ctx, req.Email, req.Password, req.DeviceId)
 	if err != nil {
 		return nil, utils.MapError(err)
 

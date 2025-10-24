@@ -9,6 +9,7 @@ import (
 	userpb "auth_service/proto/gen"
 	"context"
 	"fmt"
+	"log"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -18,7 +19,7 @@ type Service interface {
 	GetCustomerByEmail(ctx context.Context, email string) (*userpb.CreateCustomerResponse, error)
 	// GetCustomers(ctx context.Context) ([]*types.CreateCustomerResult, error)
 	// DeleteCustomer(ctx context.Context, email string) (*types.DeleteCustomerResult, error)
-	Login(ctx context.Context, email, password string) (string, error)
+	Login(ctx context.Context, email, password, deviceID string) (string, error)
 }
 type service struct {
 	userClient usersvc.Client
@@ -64,7 +65,7 @@ func (s *service) GetCustomerByEmail(ctx context.Context, email string) (*userpb
 	return res, nil
 }
 
-func (s *service) Login(ctx context.Context, email, password string) (string, error) {
+func (s *service) Login(ctx context.Context, email, password, deviceId string) (string, error) {
 	credentials, err := s.userClient.GetCustomerCredentials(ctx, &userpb.GetCustomerByEmailRequest{Email: email})
 	if err != nil {
 		return "", fmt.Errorf("user service create: %w", err)
@@ -84,10 +85,12 @@ func (s *service) Login(ctx context.Context, email, password string) (string, er
 	if err != nil {
 		return "", fmt.Errorf("token error: %w", err)
 	}
-	if err := s.authRepo.Store(ctx, refreshToken, credentials.Email, s.authCnf.Refresh_Token_Exp_Duration); err != nil {
+
+	if err := s.authRepo.Store(ctx, refreshToken, credentials.Email, deviceId, s.authCnf.Refresh_Token_Exp_Duration); err != nil {
 
 		return "", fmt.Errorf("db error: %w", err)
 	}
+	log.Println("saved")
 	wholeToken := fmt.Sprintf("refreshToken: %s accessToken: %s", refreshToken, accessToken)
 	return wholeToken, nil
 }

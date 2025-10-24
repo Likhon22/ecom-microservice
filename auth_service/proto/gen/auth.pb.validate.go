@@ -61,6 +61,8 @@ func (m *LoginRequest) validate(all bool) error {
 
 	// no validation rules for Password
 
+	// no validation rules for DeviceId
+
 	if len(errors) > 0 {
 		return LoginRequestMultiError(errors)
 	}
