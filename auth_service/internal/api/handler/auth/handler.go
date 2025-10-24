@@ -23,12 +23,21 @@ func NewHandler(service auth.Service) *handler {
 }
 func (h *handler) Login(ctx context.Context, req *userpb.LoginRequest) (*userpb.LoginResponse, error) {
 
-	token, err := h.service.Login(ctx, req.Email, req.Password, req.DeviceId)
+	accessToken, refreshToken, err := h.service.Login(ctx, req.Email, req.Password, req.DeviceId)
 	if err != nil {
 		return nil, utils.MapError(err)
 
 	}
-	md := metadata.Pairs("set-cookie", utils.BuildCookieHeader("access-token", token, 5*time.Minute, true, true))
+	md := metadata.Pairs("set-cookie", utils.BuildCookieHeader("access-token", accessToken, 5*time.Minute, true, true))
+	refreshmd := metadata.Pairs("set-cookie", utils.BuildCookieHeader("refresh-token", refreshToken, 24*time.Hour, true, true))
 	grpc.SetHeader(ctx, md)
-	return &userpb.LoginResponse{Message: token}, nil
+	grpc.SetHeader(ctx, refreshmd)
+	return &userpb.LoginResponse{Message: accessToken}, nil
+}
+
+func (h *handler) ValidateRefreshToken(ctx context.Context, req *userpb.ValidateRefreshTokenRequest) (*userpb.ValidateRefreshTokenResponse, error) {
+	token, err := utils.GetAccessTokenFromCtx(ctx)
+	if err != nil {
+		return nil, utils.MapError(err)
+	}
 }

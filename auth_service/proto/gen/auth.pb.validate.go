@@ -241,3 +241,211 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = LoginResponseValidationError{}
+
+// Validate checks the field values on ValidateRefreshTokenRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *ValidateRefreshTokenRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ValidateRefreshTokenRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// ValidateRefreshTokenRequestMultiError, or nil if none found.
+func (m *ValidateRefreshTokenRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ValidateRefreshTokenRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if len(errors) > 0 {
+		return ValidateRefreshTokenRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// ValidateRefreshTokenRequestMultiError is an error wrapping multiple
+// validation errors returned by ValidateRefreshTokenRequest.ValidateAll() if
+// the designated constraints aren't met.
+type ValidateRefreshTokenRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ValidateRefreshTokenRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ValidateRefreshTokenRequestMultiError) AllErrors() []error { return m }
+
+// ValidateRefreshTokenRequestValidationError is the validation error returned
+// by ValidateRefreshTokenRequest.Validate if the designated constraints
+// aren't met.
+type ValidateRefreshTokenRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ValidateRefreshTokenRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ValidateRefreshTokenRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ValidateRefreshTokenRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ValidateRefreshTokenRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ValidateRefreshTokenRequestValidationError) ErrorName() string {
+	return "ValidateRefreshTokenRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ValidateRefreshTokenRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sValidateRefreshTokenRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ValidateRefreshTokenRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ValidateRefreshTokenRequestValidationError{}
+
+// Validate checks the field values on ValidateRefreshTokenResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *ValidateRefreshTokenResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ValidateRefreshTokenResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// ValidateRefreshTokenResponseMultiError, or nil if none found.
+func (m *ValidateRefreshTokenResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ValidateRefreshTokenResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Message
+
+	if len(errors) > 0 {
+		return ValidateRefreshTokenResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// ValidateRefreshTokenResponseMultiError is an error wrapping multiple
+// validation errors returned by ValidateRefreshTokenResponse.ValidateAll() if
+// the designated constraints aren't met.
+type ValidateRefreshTokenResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ValidateRefreshTokenResponseMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ValidateRefreshTokenResponseMultiError) AllErrors() []error { return m }
+
+// ValidateRefreshTokenResponseValidationError is the validation error returned
+// by ValidateRefreshTokenResponse.Validate if the designated constraints
+// aren't met.
+type ValidateRefreshTokenResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ValidateRefreshTokenResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ValidateRefreshTokenResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ValidateRefreshTokenResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ValidateRefreshTokenResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ValidateRefreshTokenResponseValidationError) ErrorName() string {
+	return "ValidateRefreshTokenResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ValidateRefreshTokenResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sValidateRefreshTokenResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ValidateRefreshTokenResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ValidateRefreshTokenResponseValidationError{}

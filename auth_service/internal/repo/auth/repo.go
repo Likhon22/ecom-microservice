@@ -3,7 +3,7 @@ package repo
 import (
 	"auth_service/internal/domain"
 	"context"
-	"log"
+	"encoding/json"
 	"time"
 
 	"github.com/redis/go-redis/v9"
@@ -18,6 +18,7 @@ type authRepo struct {
 }
 type AuthRepo interface {
 	Store(ctx context.Context, refreshToken, email, device_id string, ttl time.Duration) error
+	Get(ctx context.Context, email, deviceID string) (string, time.Time, error)
 }
 
 func (r *authRepo) redisKey(email, deviceID string) string {
@@ -32,11 +33,26 @@ func NewAuthRepo(db *mongo.Client, redis *redis.Client) AuthRepo {
 	}
 }
 
+type RefreshTokenData struct {
+	Token     string
+	ExpiresAt time.Time
+}
+
 func (r *authRepo) Store(ctx context.Context, refreshToken, email, device_id string, ttl time.Duration) error {
-
+	now := time.Now().UTC()
 	key := r.redisKey(email, device_id)
+	data := RefreshTokenData{
+		Token:     refreshToken,
+		ExpiresAt: now.Add(ttl),
+	}
 
-	if err := r.redis.Set(ctx, key, refreshToken, ttl).Err(); err != nil {
+	// Marshal to JSON
+	b, err := json.Marshal(data)
+	if err != nil {
+		return err
+	}
+
+	if err := r.redis.Set(ctx, key, b, ttl).Err(); err != nil {
 		return err
 	}
 
@@ -44,13 +60,13 @@ func (r *authRepo) Store(ctx context.Context, refreshToken, email, device_id str
 	update := bson.M{
 		"$set": bson.M{
 			"token":      refreshToken,
-			"created_at": time.Now(),
-			"expires_at": time.Now().Add(ttl),
+			"created_at": now,
+			"expires_at": data.ExpiresAt,
 			"revoked":    false,
 		},
 	}
 	opts := options.Update().SetUpsert(true)
-	_, err := r.authCollection.UpdateOne(ctx, filter, update, opts)
+	_, err = r.authCollection.UpdateOne(ctx, filter, update, opts)
 	if err != nil {
 		return err
 
@@ -59,26 +75,36 @@ func (r *authRepo) Store(ctx context.Context, refreshToken, email, device_id str
 
 }
 
-func (r *authRepo) Get(ctx context.Context, email, device_id string, ttl time.Duration) (string, error) {
+func (r *authRepo) Get(ctx context.Context, email, deviceID string) (string, time.Time, error) {
 
-	key := r.redisKey(email, device_id)
+	key := r.redisKey(email, deviceID)
 
-	token, err := r.redis.Get(ctx, key).Result()
+	res, err := r.redis.Get(ctx, key).Result()
 	if err == nil {
-		return token, nil
+		var data RefreshTokenData
+		if err := json.Unmarshal([]byte(res), &data); err != nil {
+			return "", time.Time{}, err
+		}
+		return data.Token, data.ExpiresAt, nil
+	}
 
+	// If Redis miss, fallback to MongoDB
+	filter := bson.M{"email": email, "device_id": deviceID}
+	var result domain.RefreshTokenDomain
+	if err := r.authCollection.FindOne(ctx, filter).Decode(&result); err != nil {
+		return "", time.Time{}, err
 	}
-	if err != redis.Nil {
-		return "", nil
 
+	data := RefreshTokenData{
+		Token:     result.Token,
+		ExpiresAt: result.ExpiresAt,
 	}
-	filter := bson.M{"email": email, "device_id": device_id}
-	var resultResponse *domain.RefreshTokenDomain
-	if err := r.authCollection.FindOne(ctx, filter).Decode(&resultResponse); err != nil {
-		return "", err
+	b, err := json.Marshal(data)
+	if err != nil {
+		return "", time.Time{}, err
 	}
-	if err := r.redis.Set(ctx, key, resultResponse.Token, time.Until(resultResponse.ExpiresAt)).Err(); err != nil {
-		log.Println("failed to cache token in redis:", err)
+	if err := r.redis.Set(ctx, key, b, time.Until(result.ExpiresAt)).Err(); err != nil {
+		return "", time.Time{}, err
 	}
-	return resultResponse.Token, nil
+	return result.Token, result.ExpiresAt, nil
 }
