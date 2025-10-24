@@ -12,8 +12,8 @@ import (
 func main() {
 	cfg := config.GetConfig()
 
-	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
-	defer stop()
+	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	defer cancel()
 
 	app, err := bootstrap.InitializeApp(ctx, cfg)
 	if err != nil {
