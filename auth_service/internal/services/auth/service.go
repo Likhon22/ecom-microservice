@@ -22,6 +22,8 @@ type Service interface {
 	// GetCustomers(ctx context.Context) ([]*types.CreateCustomerResult, error)
 	// DeleteCustomer(ctx context.Context, email string) (*types.DeleteCustomerResult, error)
 	Login(ctx context.Context, email, password, deviceID string) (string, string, error)
+	ValidateRefreshToken(ctx context.Context, refreshToken string) (string, error)
+	Logout(ctx context.Context, refreshToken string) (string, error)
 }
 type service struct {
 	userClient usersvc.Client
@@ -103,10 +105,14 @@ func (s *service) ValidateRefreshToken(ctx context.Context, refreshToken string)
 		return "", err
 
 	}
+	log.Println(claims)
 	now := time.Now().UTC()
-	token, expiry, err := s.authRepo.Get(ctx, claims.Email, claims.DeviceId)
+	tokenData, err := s.authRepo.Get(ctx, claims.Email, claims.DeviceId)
+	if tokenData == nil {
+		return "", errors.New("no token found")
+	}
 
-	if now.After(expiry) {
+	if now.After(tokenData.ExpiresAt) {
 		return "", errors.New("token expired")
 
 	}
@@ -115,16 +121,31 @@ func (s *service) ValidateRefreshToken(ctx context.Context, refreshToken string)
 		return "", err
 	}
 
-	if token == "" {
+	if tokenData.Token == "" {
 		return "", errors.New("no token found")
 	}
 
-	if refreshToken != token {
+	if refreshToken != tokenData.Token {
 		return "", errors.New("token doesnot match")
+	}
+	if tokenData.Revoked {
+		return "", errors.New("token is revoked")
+
 	}
 	accessToken, err := utils.SignedToken(claims.Email, claims.Role, claims.DeviceId, s.authCnf.Jwt_Access_Token_Secret, s.authCnf.Access_Token_Exp_Duration)
 	if err != nil {
 		return "", err
 	}
 	return accessToken, nil
+}
+
+func (s *service) Logout(ctx context.Context, refreshToken string) (string, error) {
+	claims, err := utils.ParseJwt(refreshToken, s.authCnf.Jwt_Refresh_Token_Secret)
+	if err != nil {
+		return "", err
+	}
+	if err := s.authRepo.Revoked(ctx, claims.Email, claims.DeviceId); err != nil {
+		return "", err
+	}
+	return "logout successful", nil
 }

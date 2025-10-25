@@ -32,12 +32,24 @@ func (h *handler) Login(ctx context.Context, req *userpb.LoginRequest) (*userpb.
 	refreshmd := metadata.Pairs("set-cookie", utils.BuildCookieHeader("refresh-token", refreshToken, 24*time.Hour, true, true))
 	grpc.SetHeader(ctx, md)
 	grpc.SetHeader(ctx, refreshmd)
-	return &userpb.LoginResponse{Message: accessToken}, nil
+	return &userpb.LoginResponse{Message: refreshToken}, nil
 }
 
 func (h *handler) ValidateRefreshToken(ctx context.Context, req *userpb.ValidateRefreshTokenRequest) (*userpb.ValidateRefreshTokenResponse, error) {
-	token, err := utils.GetAccessTokenFromCtx(ctx)
+	accessToken, err := h.service.ValidateRefreshToken(ctx, req.RefreshToken)
 	if err != nil {
 		return nil, utils.MapError(err)
 	}
+	return &userpb.ValidateRefreshTokenResponse{Message: accessToken}, nil
+
+}
+
+func (h *handler) Logout(ctx context.Context, req *userpb.LogoutRequest) (*userpb.LogoutResponse, error) {
+	msg, err := h.service.Logout(ctx, req.RefreshToken)
+	if err != nil {
+		return nil, utils.MapError(err)
+
+	}
+	return &userpb.LogoutResponse{Message: msg}, nil
+
 }

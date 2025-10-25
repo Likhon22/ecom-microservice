@@ -8,6 +8,7 @@ import "validate/validate.proto";
 service AuthService {
 rpc Login (LoginRequest) returns (LoginResponse);
 rpc ValidateRefreshToken (ValidateRefreshTokenRequest) returns (ValidateRefreshTokenResponse);
+rpc Logout (LogoutRequest) returns (LogoutResponse);
 }
 
 message LoginRequest {
@@ -20,8 +21,17 @@ message LoginResponse {
   string message =1;
 }
 message ValidateRefreshTokenRequest {
+  string refresh_token = 1;
 }
 message ValidateRefreshTokenResponse {
+string message =1;
+
+}
+
+message LogoutRequest {
+  string refresh_token = 1;
+}
+message LogoutResponse {
 string message =1;
 
 }

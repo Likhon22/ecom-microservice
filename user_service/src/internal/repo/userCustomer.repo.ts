@@ -61,6 +61,7 @@ export class UserCustomerRepo implements UserCustomerRepoInterface {
         select: 'password role status isDeleted passwordChangedAt',
       })
       .lean<TCustomerPopulated>();
+
     return customer;
   }
   async deleteUser(email: string): Promise<TUser | null> {

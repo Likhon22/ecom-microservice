@@ -18,7 +18,8 @@ type authRepo struct {
 }
 type AuthRepo interface {
 	Store(ctx context.Context, refreshToken, email, device_id string, ttl time.Duration) error
-	Get(ctx context.Context, email, deviceID string) (string, time.Time, error)
+	Get(ctx context.Context, email, deviceID string) (*RefreshTokenData, error)
+	Revoked(ctx context.Context, email, deviceID string) error
 }
 
 func (r *authRepo) redisKey(email, deviceID string) string {
@@ -36,6 +37,7 @@ func NewAuthRepo(db *mongo.Client, redis *redis.Client) AuthRepo {
 type RefreshTokenData struct {
 	Token     string
 	ExpiresAt time.Time
+	Revoked   bool
 }
 
 func (r *authRepo) Store(ctx context.Context, refreshToken, email, device_id string, ttl time.Duration) error {
@@ -44,6 +46,7 @@ func (r *authRepo) Store(ctx context.Context, refreshToken, email, device_id str
 	data := RefreshTokenData{
 		Token:     refreshToken,
 		ExpiresAt: now.Add(ttl),
+		Revoked:   false,
 	}
 
 	// Marshal to JSON
@@ -75,7 +78,7 @@ func (r *authRepo) Store(ctx context.Context, refreshToken, email, device_id str
 
 }
 
-func (r *authRepo) Get(ctx context.Context, email, deviceID string) (string, time.Time, error) {
+func (r *authRepo) Get(ctx context.Context, email, deviceID string) (*RefreshTokenData, error) {
 
 	key := r.redisKey(email, deviceID)
 
@@ -83,28 +86,43 @@ func (r *authRepo) Get(ctx context.Context, email, deviceID string) (string, tim
 	if err == nil {
 		var data RefreshTokenData
 		if err := json.Unmarshal([]byte(res), &data); err != nil {
-			return "", time.Time{}, err
+			return nil, err
 		}
-		return data.Token, data.ExpiresAt, nil
+		return &data, nil
 	}
 
 	// If Redis miss, fallback to MongoDB
 	filter := bson.M{"email": email, "device_id": deviceID}
 	var result domain.RefreshTokenDomain
 	if err := r.authCollection.FindOne(ctx, filter).Decode(&result); err != nil {
-		return "", time.Time{}, err
+		return nil, err
 	}
 
 	data := RefreshTokenData{
 		Token:     result.Token,
 		ExpiresAt: result.ExpiresAt,
+		Revoked:   result.Revoked,
 	}
 	b, err := json.Marshal(data)
 	if err != nil {
-		return "", time.Time{}, err
+		return nil, err
 	}
 	if err := r.redis.Set(ctx, key, b, time.Until(result.ExpiresAt)).Err(); err != nil {
-		return "", time.Time{}, err
+		return nil, err
 	}
-	return result.Token, result.ExpiresAt, nil
+	return &data, nil
+}
+
+func (r *authRepo) Revoked(ctx context.Context, email, deviceID string) error {
+	key := r.redisKey(email, deviceID)
+	if err := r.redis.Del(ctx, key).Err(); err != nil && err != redis.Nil {
+		return err
+	}
+	filter := bson.M{"email": email, "device_id": deviceID}
+	_, err := r.authCollection.DeleteOne(ctx, filter)
+	if err != nil {
+		return err
+	}
+	return nil
+
 }

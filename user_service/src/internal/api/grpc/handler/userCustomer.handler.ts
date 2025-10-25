@@ -87,6 +87,7 @@ export class UserCustomerGrpcHandler {
       const credentials = await this.service.getCustomerCredentials(
         call.request.email,
       );
+
       return callback(null, credentials);
     } catch (err) {
       callback(mapGrpcError(err), null);
