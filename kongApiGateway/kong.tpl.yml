@@ -13,7 +13,7 @@ services:
     plugins:
       - name: grpc-gateway
         config:
-          proto: __B64__
+          proto: ${PROTO_B64}
       - name: request-transformer
         config:
           add:

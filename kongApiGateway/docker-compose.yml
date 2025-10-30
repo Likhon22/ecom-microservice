@@ -5,7 +5,7 @@ services:
     restart: unless-stopped
     environment:
       KONG_DATABASE: "off"
-      KONG_DECLARATIVE_CONFIG: "/kong/kong.yml"
+      KONG_DECLARATIVE_CONFIG: "/tmp/kong.yml"
       # Optional: adjust proxy ports if needed
       # KONG_PROXY_LISTEN: "0.0.0.0:8000, 0.0.0.0:8443 ssl"
     ports:
@@ -13,9 +13,9 @@ services:
       - "8443:8443" # HTTPS proxy (optional)
       - "8001:8001" # Admin API (optional; not needed in DB-less)
     volumes:
-      - ./:/kong
+      - ./kong.tpl.yml:/kong/kong.tpl.yml:ro
+      - ./descriptor.b64:/kong/descriptor.b64:ro
+      - ./generate-config.sh:/usr/local/bin/generate-config.sh:ro
     extra_hosts:
       - "host.docker.internal:host-gateway"
-    command: >
-      sh -lc 'PROTO_B64="$(cat /kong/descriptor.b64)" envsubst < /kong/kong.tpl.yml > /kong/kong.yml; \
-              kong docker-start'
+    command: generate-config.sh
