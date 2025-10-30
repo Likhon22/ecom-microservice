@@ -1,0 +1,21 @@
+_format_version: "3.0"
+_transform: true
+services:
+  - name: auth-create-account
+    url: grpc://host.docker.internal:5002
+    path: /auth_service.AuthService/CreateAccount
+    routes:
+      - name: http-auth-create-account
+        protocols: [http, https]
+        methods: [POST]
+        paths: [/auth/create-account]
+        strip_path: true
+    plugins:
+      - name: grpc-gateway
+        config:
+          proto: __B64__
+      - name: request-transformer
+        config:
+          add:
+            headers:
+              - "grpc-metadata-authorization:$(headers.authorization)"

@@ -1,0 +1,21 @@
+services:
+  kong:
+    image: kong:3.7
+    container_name: kong
+    restart: unless-stopped
+    environment:
+      KONG_DATABASE: "off"
+      KONG_DECLARATIVE_CONFIG: "/kong/kong.yml"
+      # Optional: adjust proxy ports if needed
+      # KONG_PROXY_LISTEN: "0.0.0.0:8000, 0.0.0.0:8443 ssl"
+    ports:
+      - "8000:8000" # HTTP proxy
+      - "8443:8443" # HTTPS proxy (optional)
+      - "8001:8001" # Admin API (optional; not needed in DB-less)
+    volumes:
+      - ./:/kong
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    command: >
+      sh -lc 'PROTO_B64="$(cat /kong/descriptor.b64)" envsubst < /kong/kong.tpl.yml > /kong/kong.yml; \
+              kong docker-start'
