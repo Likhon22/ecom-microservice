@@ -90,8 +90,10 @@ The generate-config.sh script writes to /tmp inside the container, which should 
 If you modify the proto files, regenerate the descriptor:
 
 ```bash
-# This depends on your proto build setup
-# Typically would be something like:
+# Install buf if not already installed
+# See: https://buf.build/docs/installation
+
+# Then regenerate the descriptor
 buf build -o descriptor.bin
 base64 descriptor.bin > descriptor.b64
 ```

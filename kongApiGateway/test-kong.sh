@@ -8,7 +8,8 @@ echo ""
 
 # Check if Kong container is running
 echo "1. Checking if Kong container is running..."
-if docker compose ps | grep -q "kong.*Up"; then
+if docker compose ps --format json 2>/dev/null | grep -q '"Service":"kong"' && \
+   docker compose ps --format json 2>/dev/null | grep -q '"State":"running"'; then
     echo "   ✓ Kong container is running"
 else
     echo "   ✗ Kong container is not running"
@@ -19,7 +20,7 @@ echo ""
 
 # Check Kong health
 echo "2. Checking Kong health status..."
-if docker compose ps | grep -q "kong.*healthy"; then
+if docker compose ps --format json 2>/dev/null | grep -q '"Health":"healthy"'; then
     echo "   ✓ Kong is healthy"
 else
     echo "   ⚠ Kong may not be fully ready yet"
@@ -60,7 +61,10 @@ echo ""
 # Check backend services
 echo "5. Checking backend services..."
 echo "   Checking auth service (port 5002)..."
-if nc -z localhost 5002 2>/dev/null; then
+# Try bash built-in first, fallback to nc if available
+if timeout 1 bash -c "echo > /dev/tcp/localhost/5002" 2>/dev/null; then
+    echo "   ✓ Auth service is listening on port 5002"
+elif command -v nc >/dev/null 2>&1 && nc -z localhost 5002 2>/dev/null; then
     echo "   ✓ Auth service is listening on port 5002"
 else
     echo "   ✗ Auth service is not running on port 5002"
@@ -68,7 +72,9 @@ else
 fi
 
 echo "   Checking user service (port 5001)..."
-if nc -z localhost 5001 2>/dev/null; then
+if timeout 1 bash -c "echo > /dev/tcp/localhost/5001" 2>/dev/null; then
+    echo "   ✓ User service is listening on port 5001"
+elif command -v nc >/dev/null 2>&1 && nc -z localhost 5001 2>/dev/null; then
     echo "   ✓ User service is listening on port 5001"
 else
     echo "   ✗ User service is not running on port 5001"
