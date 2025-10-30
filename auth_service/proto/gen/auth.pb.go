@@ -8,6 +8,7 @@ package userpb
 
 import (
 	_ "github.com/envoyproxy/protoc-gen-validate/validate"
+	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -302,12 +303,196 @@ func (x *LogoutResponse) GetMessage() string {
 	return ""
 }
 
+type CreateUserRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Email         string                 `protobuf:"bytes,2,opt,name=email,proto3" json:"email,omitempty"`
+	Password      string                 `protobuf:"bytes,3,opt,name=password,proto3" json:"password,omitempty"`
+	Phone         string                 `protobuf:"bytes,4,opt,name=phone,proto3" json:"phone,omitempty"`
+	Address       string                 `protobuf:"bytes,5,opt,name=address,proto3" json:"address,omitempty"`
+	AvatarUrl     string                 `protobuf:"bytes,6,opt,name=avatar_url,json=avatarUrl,proto3" json:"avatar_url,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateUserRequest) Reset() {
+	*x = CreateUserRequest{}
+	mi := &file_auth_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateUserRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateUserRequest) ProtoMessage() {}
+
+func (x *CreateUserRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_auth_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateUserRequest.ProtoReflect.Descriptor instead.
+func (*CreateUserRequest) Descriptor() ([]byte, []int) {
+	return file_auth_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *CreateUserRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *CreateUserRequest) GetEmail() string {
+	if x != nil {
+		return x.Email
+	}
+	return ""
+}
+
+func (x *CreateUserRequest) GetPassword() string {
+	if x != nil {
+		return x.Password
+	}
+	return ""
+}
+
+func (x *CreateUserRequest) GetPhone() string {
+	if x != nil {
+		return x.Phone
+	}
+	return ""
+}
+
+func (x *CreateUserRequest) GetAddress() string {
+	if x != nil {
+		return x.Address
+	}
+	return ""
+}
+
+func (x *CreateUserRequest) GetAvatarUrl() string {
+	if x != nil {
+		return x.AvatarUrl
+	}
+	return ""
+}
+
+type CreateUserResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Email         string                 `protobuf:"bytes,2,opt,name=email,proto3" json:"email,omitempty"`
+	Role          string                 `protobuf:"bytes,3,opt,name=role,proto3" json:"role,omitempty"`
+	Status        string                 `protobuf:"bytes,4,opt,name=status,proto3" json:"status,omitempty"`
+	Phone         string                 `protobuf:"bytes,5,opt,name=phone,proto3" json:"phone,omitempty"`
+	Address       string                 `protobuf:"bytes,6,opt,name=address,proto3" json:"address,omitempty"`
+	AvatarUrl     string                 `protobuf:"bytes,7,opt,name=avatar_url,json=avatarUrl,proto3" json:"avatar_url,omitempty"`
+	IsDeleted     bool                   `protobuf:"varint,8,opt,name=is_deleted,json=isDeleted,proto3" json:"is_deleted,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateUserResponse) Reset() {
+	*x = CreateUserResponse{}
+	mi := &file_auth_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateUserResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateUserResponse) ProtoMessage() {}
+
+func (x *CreateUserResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_auth_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateUserResponse.ProtoReflect.Descriptor instead.
+func (*CreateUserResponse) Descriptor() ([]byte, []int) {
+	return file_auth_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *CreateUserResponse) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *CreateUserResponse) GetEmail() string {
+	if x != nil {
+		return x.Email
+	}
+	return ""
+}
+
+func (x *CreateUserResponse) GetRole() string {
+	if x != nil {
+		return x.Role
+	}
+	return ""
+}
+
+func (x *CreateUserResponse) GetStatus() string {
+	if x != nil {
+		return x.Status
+	}
+	return ""
+}
+
+func (x *CreateUserResponse) GetPhone() string {
+	if x != nil {
+		return x.Phone
+	}
+	return ""
+}
+
+func (x *CreateUserResponse) GetAddress() string {
+	if x != nil {
+		return x.Address
+	}
+	return ""
+}
+
+func (x *CreateUserResponse) GetAvatarUrl() string {
+	if x != nil {
+		return x.AvatarUrl
+	}
+	return ""
+}
+
+func (x *CreateUserResponse) GetIsDeleted() bool {
+	if x != nil {
+		return x.IsDeleted
+	}
+	return false
+}
+
 var File_auth_proto protoreflect.FileDescriptor
 
 const file_auth_proto_rawDesc = "" +
 	"\n" +
 	"\n" +
-	"auth.proto\x12\fauth_service\x1a\x17validate/validate.proto\"]\n" +
+	"auth.proto\x12\fauth_service\x1a\x17validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\"]\n" +
 	"\fLoginRequest\x12\x14\n" +
 	"\x05email\x18\x01 \x01(\tR\x05email\x12\x1a\n" +
 	"\bpassword\x18\x02 \x01(\tR\bpassword\x12\x1b\n" +
@@ -321,11 +506,31 @@ const file_auth_proto_rawDesc = "" +
 	"\rLogoutRequest\x12#\n" +
 	"\rrefresh_token\x18\x01 \x01(\tR\frefreshToken\"*\n" +
 	"\x0eLogoutResponse\x12\x18\n" +
-	"\amessage\x18\x01 \x01(\tR\amessage2\x83\x02\n" +
-	"\vAuthService\x12@\n" +
-	"\x05Login\x12\x1a.auth_service.LoginRequest\x1a\x1b.auth_service.LoginResponse\x12m\n" +
-	"\x14ValidateRefreshToken\x12).auth_service.ValidateRefreshTokenRequest\x1a*.auth_service.ValidateRefreshTokenResponse\x12C\n" +
-	"\x06Logout\x12\x1b.auth_service.LogoutRequest\x1a\x1c.auth_service.LogoutResponseB\xae\x01\n" +
+	"\amessage\x18\x01 \x01(\tR\amessage\"\xc3\x01\n" +
+	"\x11CreateUserRequest\x12\x1b\n" +
+	"\x04name\x18\x01 \x01(\tB\a\xfaB\x04r\x02\x10\x01R\x04name\x12\x1d\n" +
+	"\x05email\x18\x02 \x01(\tB\a\xfaB\x04r\x02`\x01R\x05email\x12#\n" +
+	"\bpassword\x18\x03 \x01(\tB\a\xfaB\x04r\x02\x10\x06R\bpassword\x12\x14\n" +
+	"\x05phone\x18\x04 \x01(\tR\x05phone\x12\x18\n" +
+	"\aaddress\x18\x05 \x01(\tR\aaddress\x12\x1d\n" +
+	"\n" +
+	"avatar_url\x18\x06 \x01(\tR\tavatarUrl\"\xd8\x01\n" +
+	"\x12CreateUserResponse\x12\x12\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12\x14\n" +
+	"\x05email\x18\x02 \x01(\tR\x05email\x12\x12\n" +
+	"\x04role\x18\x03 \x01(\tR\x04role\x12\x16\n" +
+	"\x06status\x18\x04 \x01(\tR\x06status\x12\x14\n" +
+	"\x05phone\x18\x05 \x01(\tR\x05phone\x12\x18\n" +
+	"\aaddress\x18\x06 \x01(\tR\aaddress\x12\x1d\n" +
+	"\n" +
+	"avatar_url\x18\a \x01(\tR\tavatarUrl\x12\x1d\n" +
+	"\n" +
+	"is_deleted\x18\b \x01(\bR\tisDeleted2\xc3\x03\n" +
+	"\vAuthService\x12X\n" +
+	"\x05Login\x12\x1a.auth_service.LoginRequest\x1a\x1b.auth_service.LoginResponse\"\x16\x82\xd3\xe4\x93\x02\x10:\x01*\"\v/auth/login\x12\x90\x01\n" +
+	"\x14ValidateRefreshToken\x12).auth_service.ValidateRefreshTokenRequest\x1a*.auth_service.ValidateRefreshTokenResponse\"!\x82\xd3\xe4\x93\x02\x1b:\x01*\"\x16/auth/refresh/validate\x12\\\n" +
+	"\x06Logout\x12\x1b.auth_service.LogoutRequest\x1a\x1c.auth_service.LogoutResponse\"\x17\x82\xd3\xe4\x93\x02\x11:\x01*\"\f/auth/logout\x12i\n" +
+	"\x11CreateUserAccount\x12\x1f.auth_service.CreateUserRequest\x1a .auth_service.CreateUserResponse\"\x11\x82\xd3\xe4\x93\x02\v:\x01*\"\x06/usersB\xae\x01\n" +
 	"\x10com.auth_serviceB\tAuthProtoP\x01ZCgithub.com/Likhon22/ecom_microservice/auth_service/proto/gen;userpb\xa2\x02\x03AXX\xaa\x02\vAuthService\xca\x02\vAuthService\xe2\x02\x17AuthService\\GPBMetadata\xea\x02\vAuthServiceb\x06proto3"
 
 var (
@@ -340,7 +545,7 @@ func file_auth_proto_rawDescGZIP() []byte {
 	return file_auth_proto_rawDescData
 }
 
-var file_auth_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_auth_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
 var file_auth_proto_goTypes = []any{
 	(*LoginRequest)(nil),                 // 0: auth_service.LoginRequest
 	(*LoginResponse)(nil),                // 1: auth_service.LoginResponse
@@ -348,16 +553,20 @@ var file_auth_proto_goTypes = []any{
 	(*ValidateRefreshTokenResponse)(nil), // 3: auth_service.ValidateRefreshTokenResponse
 	(*LogoutRequest)(nil),                // 4: auth_service.LogoutRequest
 	(*LogoutResponse)(nil),               // 5: auth_service.LogoutResponse
+	(*CreateUserRequest)(nil),            // 6: auth_service.CreateUserRequest
+	(*CreateUserResponse)(nil),           // 7: auth_service.CreateUserResponse
 }
 var file_auth_proto_depIdxs = []int32{
 	0, // 0: auth_service.AuthService.Login:input_type -> auth_service.LoginRequest
 	2, // 1: auth_service.AuthService.ValidateRefreshToken:input_type -> auth_service.ValidateRefreshTokenRequest
 	4, // 2: auth_service.AuthService.Logout:input_type -> auth_service.LogoutRequest
-	1, // 3: auth_service.AuthService.Login:output_type -> auth_service.LoginResponse
-	3, // 4: auth_service.AuthService.ValidateRefreshToken:output_type -> auth_service.ValidateRefreshTokenResponse
-	5, // 5: auth_service.AuthService.Logout:output_type -> auth_service.LogoutResponse
-	3, // [3:6] is the sub-list for method output_type
-	0, // [0:3] is the sub-list for method input_type
+	6, // 3: auth_service.AuthService.CreateUserAccount:input_type -> auth_service.CreateUserRequest
+	1, // 4: auth_service.AuthService.Login:output_type -> auth_service.LoginResponse
+	3, // 5: auth_service.AuthService.ValidateRefreshToken:output_type -> auth_service.ValidateRefreshTokenResponse
+	5, // 6: auth_service.AuthService.Logout:output_type -> auth_service.LogoutResponse
+	7, // 7: auth_service.AuthService.CreateUserAccount:output_type -> auth_service.CreateUserResponse
+	4, // [4:8] is the sub-list for method output_type
+	0, // [0:4] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
@@ -374,7 +583,7 @@ func file_auth_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_auth_proto_rawDesc), len(file_auth_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   6,
+			NumMessages:   8,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

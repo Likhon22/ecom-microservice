@@ -4,7 +4,6 @@ import (
 	"auth_service/internal/clients/usersvc"
 	"auth_service/internal/config"
 	repo "auth_service/internal/repo/auth"
-	"auth_service/internal/types"
 	"auth_service/internal/utils"
 	userpb "auth_service/proto/gen"
 	"context"
@@ -17,7 +16,7 @@ import (
 )
 
 type Service interface {
-	CreateCustomer(ctx context.Context, payload types.CreateCustomerInput) (*userpb.CreateCustomerResponse, error)
+	CreateCustomer(ctx context.Context, payload *userpb.CreateUserRequest) (*userpb.CreateUserResponse, error)
 	GetCustomerByEmail(ctx context.Context, email string) (*userpb.CreateCustomerResponse, error)
 	// GetCustomers(ctx context.Context) ([]*types.CreateCustomerResult, error)
 	// DeleteCustomer(ctx context.Context, email string) (*types.DeleteCustomerResult, error)
@@ -40,21 +39,23 @@ func NewService(userClient usersvc.Client, authCnf *config.AuthConfig, authRepo 
 
 }
 
-func (s *service) CreateCustomer(ctx context.Context, payload types.CreateCustomerInput) (*userpb.CreateCustomerResponse, error) {
-	req := &userpb.CreateCustomerRequest{
-		Name:      payload.Name,
-		Email:     payload.Email,
-		Password:  payload.Password,
-		Phone:     payload.Phone,
-		Address:   payload.Address,
-		AvatarUrl: payload.AvatarURL,
-	}
-	res, err := s.userClient.CreateCustomer(ctx, req)
+func (s *service) CreateCustomer(ctx context.Context, payload *userpb.CreateUserRequest) (*userpb.CreateUserResponse, error) {
+
+	res, err := s.userClient.CreateCustomer(ctx, (*userpb.CreateCustomerRequest)(payload))
 	if err != nil {
 		return nil, fmt.Errorf("user service create: %w", err)
 
 	}
-	return res, nil
+	return &userpb.CreateUserResponse{
+		Name:      res.GetName(),
+		Email:     res.GetEmail(),
+		Role:      res.GetRole(),
+		Status:    res.GetStatus(),
+		Phone:     res.GetPhone(),
+		AvatarUrl: res.GetAvatarUrl(),
+		Address:   res.GetAddress(),
+		IsDeleted: res.GetIsDeleted(),
+	}, nil
 
 }
 func (s *service) GetCustomerByEmail(ctx context.Context, email string) (*userpb.CreateCustomerResponse, error) {

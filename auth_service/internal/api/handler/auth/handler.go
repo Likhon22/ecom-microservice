@@ -53,3 +53,20 @@ func (h *handler) Logout(ctx context.Context, req *userpb.LogoutRequest) (*userp
 	return &userpb.LogoutResponse{Message: msg}, nil
 
 }
+func (h *handler) CreateUserAccount(ctx context.Context, req *userpb.CreateUserRequest) (*userpb.CreateUserResponse, error) {
+
+	userReq := &userpb.CreateUserRequest{
+		Name:      req.GetName(),
+		Email:     req.GetEmail(),
+		Password:  req.GetPassword(),
+		Phone:     req.GetPhone(),
+		Address:   req.GetAddress(),
+		AvatarUrl: req.GetAvatarUrl(),
+	}
+	result, err := h.service.CreateCustomer(ctx, userReq)
+	if err != nil {
+		return nil, utils.MapError(err)
+
+	}
+	return result, nil
+}
