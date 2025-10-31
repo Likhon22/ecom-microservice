@@ -1,0 +1,13 @@
+syntax = "proto3";
+package buf.validate;
+
+extend google.protobuf.FieldOptions {
+  message Rules {
+    message StringRules {
+      int32 min_len = 1;
+      string email = 6;
+    }
+    StringRules string = 1;
+  }
+  Rules rules = 1091;
+}

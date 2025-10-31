@@ -1,0 +1,16 @@
+syntax = "proto3";
+package buf.validate;
+
+import "google/protobuf/descriptor.proto";
+
+message Rules {
+  message StringRules {
+    int32 min_len = 1;
+    string email = 6;
+  }
+  StringRules string = 1;
+}
+
+extend google.protobuf.FieldOptions {
+  Rules rules = 1091;
+}

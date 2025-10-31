@@ -1,0 +1,11 @@
+# Kong logs
+logs/
+# Docker artifacts
+*.pid
+*.db
+# Local overrides
+kong.local.yml
+# Proto generated files (if any)
+protos/gen/
+
+commands.txt

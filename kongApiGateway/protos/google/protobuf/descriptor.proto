@@ -1,0 +1,20 @@
+// Minimal google.protobuf.descriptor stub for Kong
+syntax = "proto3";
+
+package google.protobuf;
+
+message FileDescriptorProto {
+  optional string name = 1;
+}
+
+message MethodOptions {
+  repeated google.protobuf.UninterpretedOption uninterpreted_option = 999;
+}
+
+message FieldOptions {
+  repeated google.protobuf.UninterpretedOption uninterpreted_option = 999;
+}
+
+message UninterpretedOption {
+  optional string string_value = 7;
+}

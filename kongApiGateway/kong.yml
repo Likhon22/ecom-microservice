@@ -3,17 +3,16 @@ _transform: true
 services:
   - name: auth-create-account
     url: grpc://host.docker.internal:5002
-    path: /auth_service.AuthService/CreateAccount
     routes:
       - name: http-auth-create-account
         protocols: [http, https]
         methods: [POST]
-        paths: [/auth/create-account]
-        strip_path: true
+        paths: [/users]
+        strip_path: false
     plugins:
       - name: grpc-gateway
         config:
-          proto: ""
+          proto: "./protos/auth.proto"
       - name: request-transformer
         config:
           add:
