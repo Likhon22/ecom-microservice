@@ -6,6 +6,7 @@ import (
 	"auth_service/internal/clients/usersvc"
 	"auth_service/internal/config"
 	"auth_service/internal/infra/db"
+	"auth_service/internal/interceptors"
 	repo "auth_service/internal/repo/auth"
 	"auth_service/internal/services/auth"
 	userpb "auth_service/proto/gen"
@@ -52,7 +53,9 @@ func InitializeApp(ctx context.Context, cfg *config.Config) (*App, error) {
 		return nil, fmt.Errorf("failed to listen: %w", err)
 	}
 
-	s := grpc.NewServer()
+	s := grpc.NewServer(
+		grpc.UnaryInterceptor(interceptors.ErrorInterCeptor()),
+	)
 
 	// repo
 

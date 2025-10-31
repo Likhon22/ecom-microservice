@@ -2,6 +2,7 @@ version: v1
 name: buf.build/likhon22/auth_service
 deps:
   - buf.build/envoyproxy/protoc-gen-validate
+  - buf.build/googleapis/googleapis
 lint:
   use:
     - DEFAULT

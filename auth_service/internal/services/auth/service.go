@@ -4,7 +4,6 @@ import (
 	"auth_service/internal/clients/usersvc"
 	"auth_service/internal/config"
 	repo "auth_service/internal/repo/auth"
-	"auth_service/internal/types"
 	"auth_service/internal/utils"
 	userpb "auth_service/proto/gen"
 	"context"
@@ -17,7 +16,7 @@ import (
 )
 
 type Service interface {
-	CreateCustomer(ctx context.Context, payload types.CreateCustomerInput) (*userpb.CreateCustomerResponse, error)
+	CreateUser(ctx context.Context, payload *userpb.CreateUserRequest) (*userpb.CreateUserResponse, error)
 	GetCustomerByEmail(ctx context.Context, email string) (*userpb.CreateCustomerResponse, error)
 	// GetCustomers(ctx context.Context) ([]*types.CreateCustomerResult, error)
 	// DeleteCustomer(ctx context.Context, email string) (*types.DeleteCustomerResult, error)
@@ -40,21 +39,33 @@ func NewService(userClient usersvc.Client, authCnf *config.AuthConfig, authRepo 
 
 }
 
-func (s *service) CreateCustomer(ctx context.Context, payload types.CreateCustomerInput) (*userpb.CreateCustomerResponse, error) {
+func (s *service) CreateUser(ctx context.Context, payload *userpb.CreateUserRequest) (*userpb.CreateUserResponse, error) {
 	req := &userpb.CreateCustomerRequest{
 		Name:      payload.Name,
 		Email:     payload.Email,
 		Password:  payload.Password,
 		Phone:     payload.Phone,
 		Address:   payload.Address,
-		AvatarUrl: payload.AvatarURL,
+		AvatarUrl: payload.AvatarUrl,
 	}
 	res, err := s.userClient.CreateCustomer(ctx, req)
 	if err != nil {
-		return nil, fmt.Errorf("user service create: %w", err)
+		log.Println("err type: ", err)
+		log.Println("err value:", err)
+		return nil, err
 
 	}
-	return res, nil
+	response := &userpb.CreateUserResponse{
+		Name:      res.Name,
+		Email:     res.Email,
+		Phone:     res.Phone,
+		Address:   res.Address,
+		AvatarUrl: res.AvatarUrl,
+		Role:      res.Role,
+		Status:    res.Status,
+		IsDeleted: res.IsDeleted,
+	}
+	return response, nil
 
 }
 func (s *service) GetCustomerByEmail(ctx context.Context, email string) (*userpb.CreateCustomerResponse, error) {
@@ -63,7 +74,7 @@ func (s *service) GetCustomerByEmail(ctx context.Context, email string) (*userpb
 	}
 	res, err := s.userClient.GetCustomerByEmail(ctx, req)
 	if err != nil {
-		return nil, fmt.Errorf("user service create: %w", err)
+		return nil, err
 
 	}
 	return res, nil
@@ -72,7 +83,7 @@ func (s *service) GetCustomerByEmail(ctx context.Context, email string) (*userpb
 func (s *service) Login(ctx context.Context, email, password, deviceId string) (string, string, error) {
 	credentials, err := s.userClient.GetCustomerCredentials(ctx, &userpb.GetCustomerByEmailRequest{Email: email})
 	if err != nil {
-		return "", "", fmt.Errorf("user service create: %w", err)
+		return "", "", err
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(credentials.Password), []byte(password)); err != nil {
