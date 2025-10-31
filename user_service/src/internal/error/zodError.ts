@@ -5,16 +5,18 @@ import type {
 } from '../types/error.type.js';
 
 const handleZodError = (err: ZodError): TGenericErrorResponse => {
+  let zodMsg;
   const errorSources: TErrorSources = err.issues.map((issue: z.ZodIssue) => {
+    zodMsg = issue.message;
     return {
-      path: issue?.path[issue.path.length - 1],
+      path: issue?.path[issue.path.length - 1] ?? '',
       message: issue.message,
     };
   });
 
   return {
     statusCode: 400,
-    message: 'Validation Error',
+    message: zodMsg || 'Validation error',
     errorSources,
   };
 };

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { UserCustomerRepo } from '../repo/userCustomer.repo.js';
 import type {
   UserCustomerRequestDto,
@@ -69,6 +70,9 @@ export class UserCustomerService implements UserCustomerServiceInterface {
       };
     } catch (error) {
       await session.abortTransaction();
+      if ((error as any)?.code === 11000) {
+        throw new ApiError(409, 'Duplicate email');
+      }
       throw new ApiError(500, `User-Customer creation failed: ${error}`);
     } finally {
       session.endSession();

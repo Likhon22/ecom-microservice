@@ -12,6 +12,7 @@ import {
 } from '../../../../proto/gen/user_pb.js';
 import { mapGrpcError } from '../utils/mapError.js';
 import { toCreateCustomerResponse } from '../utils/responseFactory.js';
+import { TCustomerSchema } from '../../handlers/userCustomer/userCustomer.validation.js';
 
 export class UserCustomerGrpcHandler {
   private service: UserCustomerService;
@@ -23,6 +24,7 @@ export class UserCustomerGrpcHandler {
     callback: sendUnaryData<CreateCustomerResponse>,
   ) {
     try {
+      TCustomerSchema.shape.body.parse(call.request);
       const result = await this.service.create({
         name: call.request.name,
         email: call.request.email,

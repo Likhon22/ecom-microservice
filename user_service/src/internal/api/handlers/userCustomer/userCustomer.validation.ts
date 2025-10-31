@@ -6,7 +6,7 @@ export const TCustomerSchema = z.object({
     phone: z.string().optional(),
     address: z.string().optional(),
     avatarUrl: z.string().url().optional(),
-    email: z.string().email(),
+    email: z.string().min(1, 'Email is required').email('Invalid email type'),
     password: z.string().min(6, 'Password must be at least 6 characters'),
   }),
 });

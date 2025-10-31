@@ -29,6 +29,7 @@ export function handleGrpcError(err: unknown) {
   }
   if ((err as any)?.code === 11000) {
     const simplified = handleDuplicateError(err);
+
     return new ConnectError(
       simplified.message,
       Code.AlreadyExists,
