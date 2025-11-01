@@ -9,3 +9,4 @@ kong.local.yml
 protos/gen/
 
 commands.txt
+.env

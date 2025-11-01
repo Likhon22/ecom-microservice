@@ -7,12 +7,10 @@ services:
       - name: create-user-route
         paths: [/users]
         methods: [POST]
-        plugins: # Route-specific plugin
-          - name: request-transformer
+        plugins:
+          - name: auth-token-validator
             config:
-              add:
-                headers:
-                  - "grpc-metadata-authorization:$(headers.authorization)"
+              jwt_secret: "${{env://JWT_ACCESS_SECRET}}"
 
       - name: login-route
         paths: [/auth/login]
