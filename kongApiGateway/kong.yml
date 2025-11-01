@@ -1,20 +1,26 @@
 _format_version: "3.0"
 _transform: true
 services:
-  - name: auth-create-account
+  - name: auth-service
     url: grpc://host.docker.internal:5002
     routes:
-      - name: http-auth-create-account
-        protocols: [http, https]
-        methods: [POST]
+      - name: create-user-route
         paths: [/users]
-        strip_path: false
-    plugins:
+        methods: [POST]
+        plugins: # Route-specific plugin
+          - name: request-transformer
+            config:
+              add:
+                headers:
+                  - "grpc-metadata-authorization:$(headers.authorization)"
+
+      - name: login-route
+        paths: [/auth/login]
+        methods: [POST]
+        plugins:
+          - name: grpc-cookie-transformer
+
+    plugins: # Service-level plugins (apply to ALL routes)
       - name: grpc-gateway
         config:
-          proto: "./protos/auth.proto"
-      - name: request-transformer
-        config:
-          add:
-            headers:
-              - "grpc-metadata-authorization:$(headers.authorization)"
+          proto: "/kong/protos/auth.proto"
