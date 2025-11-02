@@ -69,7 +69,12 @@ func (h *handler) ValidateRefreshToken(ctx context.Context, req *userpb.Validate
 }
 
 func (h *handler) Logout(ctx context.Context, req *userpb.LogoutRequest) (*userpb.StandardResponse, error) {
-	msg, err := h.service.Logout(ctx, req.RefreshToken)
+	incomingMetadata, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return nil, utils.MapError(fmt.Errorf("no metadata in context"))
+	}
+	refreshToken := incomingMetadata.Get("refresh-token")
+	msg, err := h.service.Logout(ctx, refreshToken[0])
 	if err != nil {
 		return nil, utils.MapError(err)
 
