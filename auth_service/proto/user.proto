@@ -4,12 +4,38 @@ package user_service;
 option go_package = "github.com/Likhon22/ecom_microservice/auth_service/proto/gen;userpb";
 import "validate/validate.proto";
 import "google/protobuf/timestamp.proto";
+import "google/api/annotations.proto";
 service UserService {
-  rpc CreateCustomer (CreateCustomerRequest) returns (CreateCustomerResponse);
-  rpc GetCustomerByEmail (GetCustomerByEmailRequest) returns (CreateCustomerResponse);
-  rpc GetCustomers (GetCustomersRequest) returns (GetCustomersResponse);
-  rpc DeleteCustomer (DeleteCustomerRequest) returns (DeleteCustomerResponse);
-  rpc GetCustomerCredentials (GetCustomerByEmailRequest) returns (CustomerCredentialsResponse);
+  rpc CreateCustomer (CreateCustomerRequest) returns (CreateCustomerResponse) {
+    option (google.api.http) = {
+      post: "/customers"
+      body: "*"
+    };
+  }
+
+  rpc GetCustomerByEmail (GetCustomerByEmailRequest) returns (CreateCustomerResponse) {
+    option (google.api.http) = {
+      get: "/customers/{email}"
+    };
+  }
+
+  rpc GetCustomers (GetCustomersRequest) returns (GetCustomersResponse) {
+    option (google.api.http) = {
+      get: "/customers"
+    };
+  }
+
+  rpc DeleteCustomer (DeleteCustomerRequest) returns (DeleteCustomerResponse) {
+    option (google.api.http) = {
+      delete: "/customers/{email}"
+    };
+  }
+
+  rpc GetCustomerCredentials (GetCustomerByEmailRequest) returns (CustomerCredentialsResponse) {
+    option (google.api.http) = {
+      get: "/customers/{email}/credentials"
+    };
+  }
 }
 
 message CreateCustomerRequest {

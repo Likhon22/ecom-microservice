@@ -8,6 +8,7 @@ package userpb
 
 import (
 	_ "github.com/envoyproxy/protoc-gen-validate/validate"
+	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
@@ -508,7 +509,7 @@ var File_user_proto protoreflect.FileDescriptor
 const file_user_proto_rawDesc = "" +
 	"\n" +
 	"\n" +
-	"user.proto\x12\fuser_service\x1a\x17validate/validate.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc7\x01\n" +
+	"user.proto\x12\fuser_service\x1a\x17validate/validate.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1cgoogle/api/annotations.proto\"\xc7\x01\n" +
 	"\x15CreateCustomerRequest\x12\x1b\n" +
 	"\x04name\x18\x01 \x01(\tB\a\xfaB\x04r\x02\x10\x01R\x04name\x12\x1d\n" +
 	"\x05email\x18\x02 \x01(\tB\a\xfaB\x04r\x02`\x01R\x05email\x12#\n" +
@@ -544,13 +545,15 @@ const file_user_proto_rawDesc = "" +
 	"\x04role\x18\x04 \x01(\tR\x04role\x12\x1d\n" +
 	"\n" +
 	"is_deleted\x18\x05 \x01(\bR\tisDeleted\x12J\n" +
-	"\x13password_changed_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\x11passwordChangedAt2\xf1\x03\n" +
-	"\vUserService\x12[\n" +
-	"\x0eCreateCustomer\x12#.user_service.CreateCustomerRequest\x1a$.user_service.CreateCustomerResponse\x12c\n" +
-	"\x12GetCustomerByEmail\x12'.user_service.GetCustomerByEmailRequest\x1a$.user_service.CreateCustomerResponse\x12U\n" +
-	"\fGetCustomers\x12!.user_service.GetCustomersRequest\x1a\".user_service.GetCustomersResponse\x12[\n" +
-	"\x0eDeleteCustomer\x12#.user_service.DeleteCustomerRequest\x1a$.user_service.DeleteCustomerResponse\x12l\n" +
-	"\x16GetCustomerCredentials\x12'.user_service.GetCustomerByEmailRequest\x1a).user_service.CustomerCredentialsResponseB\xae\x01\n" +
+	"\x13password_changed_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\x11passwordChangedAt2\xfd\x04\n" +
+	"\vUserService\x12r\n" +
+	"\x0eCreateCustomer\x12#.user_service.CreateCustomerRequest\x1a$.user_service.CreateCustomerResponse\"\x15\x82\xd3\xe4\x93\x02\x0f:\x01*\"\n" +
+	"/customers\x12\x7f\n" +
+	"\x12GetCustomerByEmail\x12'.user_service.GetCustomerByEmailRequest\x1a$.user_service.CreateCustomerResponse\"\x1a\x82\xd3\xe4\x93\x02\x14\x12\x12/customers/{email}\x12i\n" +
+	"\fGetCustomers\x12!.user_service.GetCustomersRequest\x1a\".user_service.GetCustomersResponse\"\x12\x82\xd3\xe4\x93\x02\f\x12\n" +
+	"/customers\x12w\n" +
+	"\x0eDeleteCustomer\x12#.user_service.DeleteCustomerRequest\x1a$.user_service.DeleteCustomerResponse\"\x1a\x82\xd3\xe4\x93\x02\x14*\x12/customers/{email}\x12\x94\x01\n" +
+	"\x16GetCustomerCredentials\x12'.user_service.GetCustomerByEmailRequest\x1a).user_service.CustomerCredentialsResponse\"&\x82\xd3\xe4\x93\x02 \x12\x1e/customers/{email}/credentialsB\xae\x01\n" +
 	"\x10com.user_serviceB\tUserProtoP\x01ZCgithub.com/Likhon22/ecom_microservice/auth_service/proto/gen;userpb\xa2\x02\x03UXX\xaa\x02\vUserService\xca\x02\vUserService\xe2\x02\x17UserService\\GPBMetadata\xea\x02\vUserServiceb\x06proto3"
 
 var (
