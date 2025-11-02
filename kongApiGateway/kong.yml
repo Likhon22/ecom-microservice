@@ -36,3 +36,15 @@ services:
       - name: grpc-gateway
         config:
           proto: "/kong/protos/auth.proto"
+
+  - name: user-service
+    url: grpc://host.docker.internal:5001
+    routes:
+      - name: get-all-user-routes
+        paths: [/customers]
+        methods: [GET]
+    plugins:
+      - name: grpc-gateway
+        config:
+          proto: /kong/protos/user.proto
+

@@ -15,7 +15,7 @@ docker compose down
 rm -rf kong.yml
 
 # Generate kong.yml from template
-envsubst < kong.yml.template > kong.yml
+envsubst < kong.tpl.yml > kong.yml
 
 # Show generated file
 echo "Generated kong.yml:"
