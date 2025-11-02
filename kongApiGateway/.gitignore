@@ -10,3 +10,4 @@ protos/gen/
 
 commands.txt
 .env
+kong.yml

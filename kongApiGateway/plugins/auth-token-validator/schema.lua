@@ -6,7 +6,7 @@ return {
         fields = {
           { jwt_secret = { 
               type = "string", 
-              required = true,
+              required = false,
               description = "JWT secret for access token signature verification"
             } 
           },

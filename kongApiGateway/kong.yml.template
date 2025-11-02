@@ -10,7 +10,7 @@ services:
         plugins:
           - name: auth-token-validator
             config:
-              jwt_secret: "very very secret access token"
+              jwt_secret: "${JWT_ACCESS_SECRET}"
 
       - name: login-route
         paths: [/auth/login]

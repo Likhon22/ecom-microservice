@@ -7,7 +7,7 @@ services:
       KONG_DECLARATIVE_CONFIG: "/kong/kong.yml"
       KONG_PLUGINS: "bundled,grpc-cookie-transformer,auth-token-validator"
       KONG_LUA_PACKAGE_PATH: "/kong/plugins/?.lua;/kong/plugins/?/init.lua;;"
-      JWT_ACCESS_SECRET: "${JWT_ACCESS_SECRET}"
+
     ports:
       - "8000:8000"
       - "8443:8443"
