@@ -24,6 +24,13 @@ services:
         plugins:
           - name: auth-metadata-setter
           - name: grpc-cookie-transformer
+      
+      - name: logout-route
+        paths: [/auth/logout]
+        methods: [POST]
+        plugins:
+          - name: auth-metadata-setter
+          - name: auth-cookie-clearer 
 
     plugins: # Service-level plugins (apply to ALL routes)
       - name: grpc-gateway
