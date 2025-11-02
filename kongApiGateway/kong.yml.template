@@ -18,6 +18,13 @@ services:
         plugins:
           - name: grpc-cookie-transformer
 
+      - name: validation-route
+        paths: [/auth/refresh/validate]
+        methods: [POST]
+        plugins:
+          - name: auth-metadata-setter
+          - name: grpc-cookie-transformer
+
     plugins: # Service-level plugins (apply to ALL routes)
       - name: grpc-gateway
         config:
