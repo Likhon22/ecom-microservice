@@ -1,5 +1,13 @@
 _format_version: "3.0"
 _transform: true
+
+# Global logging (all requests)
+plugins:
+  - name: file-log
+    config:
+      path: /tmp/kong-access.log
+      reopen: true
+
 services:
   - name: auth-service
     url: grpc://host.docker.internal:5002
@@ -11,12 +19,23 @@ services:
           - name: auth-token-validator
             config:
               jwt_secret: "${JWT_ACCESS_SECRET}"
+          - name: rate-limiting
+            config:
+              minute: 100
+              hour: 1000
+              policy: local
 
       - name: login-route
         paths: [/auth/login]
         methods: [POST]
         plugins:
           - name: grpc-cookie-transformer
+          - name: rate-limiting
+            config:
+              minute: 10 # Strict: prevent brute force
+              hour: 50
+              policy: local
+              limit_by: ip # Limit by IP address
 
       - name: validation-route
         paths: [/auth/refresh/validate]
@@ -24,15 +43,23 @@ services:
         plugins:
           - name: auth-metadata-setter
           - name: grpc-cookie-transformer
-      
+          - name: rate-limiting
+            config:
+              minute: 200
+              policy: local
+
       - name: logout-route
         paths: [/auth/logout]
         methods: [POST]
         plugins:
           - name: auth-metadata-setter
-          - name: auth-cookie-clearer 
+          - name: auth-cookie-clearer
+          - name: rate-limiting
+            config:
+              minute: 50
+              policy: local
 
-    plugins: # Service-level plugins (apply to ALL routes)
+    plugins:
       - name: grpc-gateway
         config:
           proto: "/kong/protos/auth.proto"
@@ -43,8 +70,16 @@ services:
       - name: get-all-user-routes
         paths: [/customers]
         methods: [GET]
+        plugins:
+          - name: rate-limiting
+            config:
+              minute: 300
+              policy: local
+          - name: auth-token-validator
+            config:
+              jwt_secret: "${JWT_ACCESS_SECRET}"
+
     plugins:
       - name: grpc-gateway
         config:
           proto: /kong/protos/user.proto
-

@@ -16,5 +16,6 @@ services:
       - ./kong.yml:/kong/kong.yml
       - ./protos:/kong/protos
       - ./plugins:/kong/plugins
+      - ./logs:/tmp
     env_file:
       - .env
