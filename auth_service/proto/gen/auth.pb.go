@@ -630,11 +630,11 @@ var File_auth_proto protoreflect.FileDescriptor
 const file_auth_proto_rawDesc = "" +
 	"\n" +
 	"\n" +
-	"auth.proto\x12\fauth_service\x1a\x17validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\"]\n" +
-	"\fLoginRequest\x12\x14\n" +
-	"\x05email\x18\x01 \x01(\tR\x05email\x12\x1a\n" +
-	"\bpassword\x18\x02 \x01(\tR\bpassword\x12\x1b\n" +
-	"\tdevice_id\x18\x03 \x01(\tR\bdeviceId\")\n" +
+	"auth.proto\x12\fauth_service\x1a\x17validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\"z\n" +
+	"\fLoginRequest\x12\x1f\n" +
+	"\x05email\x18\x01 \x01(\tB\t\xfaB\x06r\x04\x10\x01`\x01R\x05email\x12#\n" +
+	"\bpassword\x18\x02 \x01(\tB\a\xfaB\x04r\x02\x10\x01R\bpassword\x12$\n" +
+	"\tdevice_id\x18\x03 \x01(\tB\a\xfaB\x04r\x02\x10\x01R\bdeviceId\")\n" +
 	"\rLoginResponse\x12\x18\n" +
 	"\amessage\x18\x01 \x01(\tR\amessage\"B\n" +
 	"\x1bValidateRefreshTokenRequest\x12#\n" +

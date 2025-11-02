@@ -5,6 +5,7 @@ import (
 	"auth_service/internal/utils"
 	userpb "auth_service/proto/gen"
 	"context"
+	"fmt"
 	"time"
 
 	"google.golang.org/grpc"
@@ -32,7 +33,9 @@ func (h *handler) CreateUserAccount(ctx context.Context, req *userpb.CreateUserR
 	return utils.WrapSuccess(result, "user created successfully", 201), nil
 }
 func (h *handler) Login(ctx context.Context, req *userpb.LoginRequest) (*userpb.StandardResponse, error) {
-
+	if err := req.ValidateAll(); err != nil {
+		return nil, utils.MapError(err)
+	}
 	accessToken, refreshToken, err := h.service.Login(ctx, req.Email, req.Password, req.DeviceId)
 	if err != nil {
 		return nil, utils.MapError(err)
@@ -47,10 +50,19 @@ func (h *handler) Login(ctx context.Context, req *userpb.LoginRequest) (*userpb.
 }
 
 func (h *handler) ValidateRefreshToken(ctx context.Context, req *userpb.ValidateRefreshTokenRequest) (*userpb.StandardResponse, error) {
-	accessToken, err := h.service.ValidateRefreshToken(ctx, req.RefreshToken)
+	incomingMd, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return nil, utils.MapError(fmt.Errorf("no metadata in context"))
+	}
+
+	refreshToken := incomingMd.Get("refresh-token")
+
+	accessToken, err := h.service.ValidateRefreshToken(ctx, refreshToken[0])
 	if err != nil {
 		return nil, utils.MapError(err)
 	}
+	md := metadata.Pairs("set-cookie", utils.BuildCookieHeader("access-token", accessToken, 5*time.Minute, true, true))
+	grpc.SetHeader(ctx, md)
 	resp := &userpb.ValidateRefreshTokenResponse{Message: accessToken}
 	return utils.WrapSuccess(resp, "new access token generated", 200), nil
 
