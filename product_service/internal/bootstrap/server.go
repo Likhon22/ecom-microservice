@@ -4,7 +4,9 @@ import (
 	"context"
 	"log"
 	"net"
+	"product_service/internal/api/handlers/product"
 	"product_service/internal/config"
+	productpb "product_service/proto/gen"
 
 	"google.golang.org/grpc"
 )
@@ -24,6 +26,8 @@ func InitializeApp(ctx context.Context, cfg *config.Config) (*App, error) {
 		return nil, err
 
 	}
+	userHandler := product.NewProductHandler()
+	productpb.RegisterProductServiceServer(server, userHandler)
 	return &App{
 		server:   server,
 		listener: listener,
