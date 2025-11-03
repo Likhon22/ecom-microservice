@@ -1,0 +1,11 @@
+# prometheus.yml
+global:
+  scrape_interval: 4s
+  evaluation_interval: 4s
+
+scrape_configs:
+  # Kong metrics
+  - job_name: "kong"
+    static_configs:
+      - targets: ["kong:8001"] # Kong Admin API
+    metrics_path: "/metrics" # Prometheus plugin exposes metrics here

@@ -1,0 +1,30 @@
+server:
+  http_listen_port: 9080 # Promtail's own metrics endpoint
+  grpc_listen_port: 0
+
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  - url: http://loki:3100/loki/api/v1/push # Where to send logs
+
+scrape_configs:
+  - job_name: kong # Label for these logs
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: kong # {job="kong"}
+          __path__: /logs/kong-access.log # File to read
+
+    pipeline_stages:
+      - json: # Parse JSON logs
+          expressions:
+            status: response.status
+            latency: latencies.request
+            client_ip: client_ip
+            route: route.name
+
+      - labels: # Add as searchable labels
+          status:
+          route:
