@@ -6,8 +6,13 @@ import (
 	"net"
 	"product_service/internal/api/handlers/product"
 	"product_service/internal/config"
+	"product_service/internal/infra/db"
+	"product_service/internal/migrations"
+	productrepo "product_service/internal/repo/productRepo"
+	productservice "product_service/internal/services/productService"
 	productpb "product_service/proto/gen"
 
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"google.golang.org/grpc"
 )
 
@@ -26,8 +31,15 @@ func InitializeApp(ctx context.Context, cfg *config.Config) (*App, error) {
 		return nil, err
 
 	}
-	userHandler := product.NewProductHandler()
-	productpb.RegisterProductServiceServer(server, userHandler)
+	dynamoDBConfig := db.GetDBConfig()
+	client := dynamodb.NewFromConfig(dynamoDBConfig)
+	log.Println("dynamo db connected")
+	migrations.InitProductTable(client)
+
+	productRepo := productrepo.NewRepo(client, "Products")
+	productService := productservice.NewService(productRepo)
+	productHandler := product.NewProductHandler(productService)
+	productpb.RegisterProductServiceServer(server, productHandler)
 	return &App{
 		server:   server,
 		listener: listener,
