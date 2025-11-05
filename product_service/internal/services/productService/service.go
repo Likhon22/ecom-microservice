@@ -18,6 +18,7 @@ type service struct {
 }
 type Service interface {
 	Create(ctx context.Context, payload *productpb.CreateProductRequest, email string) (*productpb.CreateProductResponse, error)
+	GetAll(ctx context.Context) (*productpb.GetProductsResponse, error)
 }
 
 func NewService(client client.Client, repo productrepo.ProductRepo) Service {
@@ -56,4 +57,30 @@ func (s *service) Create(ctx context.Context, payload *productpb.CreateProductRe
 		return nil, err
 	}
 	return utils.ProductResponse(productData), nil
+}
+
+func (s *service) GetAll(ctx context.Context) (*productpb.GetProductsResponse, error) {
+
+	products, err := s.repo.GetAll(ctx)
+	if err != nil {
+		return nil, err
+	}
+	pbProducts := make([]*productpb.Product, 0, len(products))
+	for _, p := range products {
+		pbProducts = append(pbProducts, &productpb.Product{
+			ProductId:   p.ProductID,
+			Name:        p.Name,
+			Description: p.Description,
+			Category:    p.Category,
+			Price:       p.Price,
+			ImageUrls:   p.ImageURLs,
+			Status:      p.Status,
+			IsFeatured:  p.IsFeatured,
+			Tags:        p.Tags,
+			CreatedBy:   p.CreatedBy,
+		})
+	}
+	return &productpb.GetProductsResponse{
+		Products: pbProducts,
+	}, nil
 }

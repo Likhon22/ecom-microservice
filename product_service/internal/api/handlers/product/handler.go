@@ -54,3 +54,20 @@ func (h *handler) CreateProduct(ctx context.Context, req *productpb.CreateProduc
 		},
 	}, nil
 }
+
+func (h *handler) GetProduct(ctx context.Context, req *productpb.GetProductsRequest) (*productpb.StandardResponse, error) {
+
+	products, err := h.service.GetAll(ctx)
+	if err != nil {
+		return nil, utils.MapError(err)
+
+	}
+	return &productpb.StandardResponse{
+		Success:    true,
+		Message:    "products fetched successfully",
+		StatusCode: 200,
+		Result: &productpb.StandardResponse_Products{
+			Products: products,
+		},
+	}, nil
+}
