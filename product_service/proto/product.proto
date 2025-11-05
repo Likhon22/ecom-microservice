@@ -15,10 +15,14 @@ rpc CreateProduct(CreateProductRequest) returns (StandardResponse) {
 rpc GetProduct (GetProductsRequest) returns (StandardResponse){
         option (google.api.http) = {
             get: "/products"
-            body: "*"
-        };
+         };
 
    }
+rpc GetProductById(GetProductByIdRequest) returns (StandardResponse) {
+        option (google.api.http) = {
+            get: "/products/{category}/{product_id}"
+        };
+    }
 }
 
 
@@ -59,11 +63,23 @@ message Product {
     string created_by = 10;
 }
 message GetProductsRequest {
-   
+    string category = 1;   
+    string search = 2;       
+       
 }
+
 message GetProductsResponse {
     repeated Product products = 1;
-   
+    int32 total_count = 2;   
+   }
+
+message GetProductByIdRequest {
+  string category = 1;      // NEW: Required for composite key
+  string product_id = 2;
+}
+
+message GetProductByIdResponse {
+    Product product = 1;
 }
 message StandardResponse {
   bool success = 1;
@@ -71,6 +87,7 @@ message StandardResponse {
   int32 status_code = 3;
   oneof result {
    CreateProductResponse product_data = 4;
-    GetProductsResponse products=5;
+   GetProductsResponse products=5;
+   GetProductByIdResponse product = 6;
     }
 }

@@ -57,7 +57,7 @@ func (h *handler) CreateProduct(ctx context.Context, req *productpb.CreateProduc
 
 func (h *handler) GetProduct(ctx context.Context, req *productpb.GetProductsRequest) (*productpb.StandardResponse, error) {
 
-	products, err := h.service.GetAll(ctx)
+	products, err := h.service.GetAll(ctx, req)
 	if err != nil {
 		return nil, utils.MapError(err)
 
@@ -70,4 +70,22 @@ func (h *handler) GetProduct(ctx context.Context, req *productpb.GetProductsRequ
 			Products: products,
 		},
 	}, nil
+}
+
+func (h *handler) GetProductById(ctx context.Context, req *productpb.GetProductByIdRequest) (*productpb.StandardResponse, error) {
+
+	product, err := h.service.GetById(ctx, req)
+	if err != nil {
+		return nil, utils.MapError(err)
+
+	}
+	return &productpb.StandardResponse{
+		Success:    true,
+		Message:    "product fetched successfully",
+		StatusCode: 200,
+		Result: &productpb.StandardResponse_Product{
+			Product: product,
+		},
+	}, nil
+
 }
