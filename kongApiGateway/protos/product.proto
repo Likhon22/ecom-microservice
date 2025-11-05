@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+package product_service;
+option go_package = "github.com/Likhon22/ecom_microservice/product_service/proto/gen;productpb";
+import "validate/validate.proto";
+import "google/api/annotations.proto";
+
+service ProductService {
+rpc CreateProduct(CreateProductRequest) returns (StandardResponse) {
+        option (google.api.http) = {
+            post: "/products"
+            body: "*"
+        };
+    }
+}
+
+
+message CreateProductRequest {
+    string name = 1;
+    string description = 2;
+    string category = 3;
+    double price = 4;
+    repeated string image_urls = 5;
+    string status = 6;
+    bool is_featured = 7;
+    repeated string tags = 8;
+}
+
+message CreateProductResponse {
+    string product_id = 1;
+    string name = 2;
+    string description = 3;
+    string category = 4;
+    double price = 5;
+    repeated string image_urls = 6;
+    string status = 7;
+    bool is_featured = 8;
+    repeated string tags = 9;
+    
+}
+
+message StandardResponse {
+  bool success = 1;
+  string message = 2;
+  int32 status_code = 3;
+  oneof result {
+    CreateProductResponse product_data = 4;
+    }
+}

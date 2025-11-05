@@ -5,7 +5,7 @@ services:
     environment:
       KONG_DATABASE: "off"
       KONG_DECLARATIVE_CONFIG: "/kong/kong.yml"
-      KONG_PLUGINS: "bundled,grpc-cookie-transformer,auth-token-validator,auth-metadata-setter,auth-cookie-clearer"
+      KONG_PLUGINS: "bundled,grpc-cookie-transformer,auth-token-validator,auth-metadata-setter,auth-cookie-clearer,user-context-injector"
       KONG_LUA_PACKAGE_PATH: "/kong/plugins/?.lua;/kong/plugins/?/init.lua;;"
       KONG_ADMIN_LISTEN: "0.0.0.0:8001"
       KONG_PROXY_LISTEN: "0.0.0.0:8000, 0.0.0.0:8443 ssl"

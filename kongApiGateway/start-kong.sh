@@ -22,4 +22,4 @@ echo "Generated kong.yml:"
 cat kong.yml
 
 # Start Kong
-docker compose up
+docker compose up 

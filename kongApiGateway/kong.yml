@@ -91,3 +91,20 @@ services:
       - name: grpc-gateway
         config:
           proto: /kong/protos/user.proto
+
+  - name: product-service
+    url: grpc://host.docker.internal:5003
+    routes:
+      - name: create-products
+        paths: [/products]
+        methods: [POST]
+        plugins:
+          - name: auth-token-validator
+            config:
+              jwt_secret: "very very secret access token"
+          - name: user-context-injector
+
+    plugins:
+      - name: grpc-gateway
+        config:
+          proto: /kong/protos/product.proto
