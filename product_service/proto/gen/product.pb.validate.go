@@ -101,17 +101,6 @@ func (m *CreateProductRequest) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	if utf8.RuneCountInString(m.GetCreatedBy()) < 1 {
-		err := CreateProductRequestValidationError{
-			field:  "CreatedBy",
-			reason: "value length must be at least 1 runes",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
-
 	for idx, item := range m.GetImageUrls() {
 		_, _ = idx, item
 

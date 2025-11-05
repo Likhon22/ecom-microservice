@@ -29,11 +29,10 @@ type CreateProductRequest struct {
 	Description   string                 `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
 	Category      string                 `protobuf:"bytes,3,opt,name=category,proto3" json:"category,omitempty"`
 	Price         float64                `protobuf:"fixed64,4,opt,name=price,proto3" json:"price,omitempty"`
-	CreatedBy     string                 `protobuf:"bytes,5,opt,name=created_by,json=createdBy,proto3" json:"created_by,omitempty"`
-	ImageUrls     []string               `protobuf:"bytes,6,rep,name=image_urls,json=imageUrls,proto3" json:"image_urls,omitempty"`
-	Status        string                 `protobuf:"bytes,7,opt,name=status,proto3" json:"status,omitempty"`
-	IsFeatured    bool                   `protobuf:"varint,8,opt,name=is_featured,json=isFeatured,proto3" json:"is_featured,omitempty"`
-	Tags          []string               `protobuf:"bytes,9,rep,name=tags,proto3" json:"tags,omitempty"`
+	ImageUrls     []string               `protobuf:"bytes,5,rep,name=image_urls,json=imageUrls,proto3" json:"image_urls,omitempty"`
+	Status        string                 `protobuf:"bytes,6,opt,name=status,proto3" json:"status,omitempty"`
+	IsFeatured    bool                   `protobuf:"varint,7,opt,name=is_featured,json=isFeatured,proto3" json:"is_featured,omitempty"`
+	Tags          []string               `protobuf:"bytes,8,rep,name=tags,proto3" json:"tags,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -94,13 +93,6 @@ func (x *CreateProductRequest) GetPrice() float64 {
 		return x.Price
 	}
 	return 0
-}
-
-func (x *CreateProductRequest) GetCreatedBy() string {
-	if x != nil {
-		return x.CreatedBy
-	}
-	return ""
 }
 
 func (x *CreateProductRequest) GetImageUrls() []string {
@@ -333,22 +325,20 @@ var File_product_proto protoreflect.FileDescriptor
 
 const file_product_proto_rawDesc = "" +
 	"\n" +
-	"\rproduct.proto\x12\x0fproduct_service\x1a\x17validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\"\xe1\x02\n" +
+	"\rproduct.proto\x12\x0fproduct_service\x1a\x17validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\"\xb9\x02\n" +
 	"\x14CreateProductRequest\x12\x1d\n" +
 	"\x04name\x18\x01 \x01(\tB\t\xfaB\x06r\x04\x10\x01\x18dR\x04name\x12,\n" +
 	"\vdescription\x18\x02 \x01(\tB\n" +
 	"\xfaB\ar\x05\x10\x01\x18\xf4\x03R\vdescription\x12%\n" +
 	"\bcategory\x18\x03 \x01(\tB\t\xfaB\x06r\x04\x10\x01\x182R\bcategory\x12$\n" +
-	"\x05price\x18\x04 \x01(\x01B\x0e\xfaB\v\x12\t!\x00\x00\x00\x00\x00\x00\x00\x00R\x05price\x12&\n" +
+	"\x05price\x18\x04 \x01(\x01B\x0e\xfaB\v\x12\t!\x00\x00\x00\x00\x00\x00\x00\x00R\x05price\x12,\n" +
 	"\n" +
-	"created_by\x18\x05 \x01(\tB\a\xfaB\x04r\x02\x10\x01R\tcreatedBy\x12,\n" +
-	"\n" +
-	"image_urls\x18\x06 \x03(\tB\r\xfaB\n" +
+	"image_urls\x18\x05 \x03(\tB\r\xfaB\n" +
 	"\x92\x01\a\"\x05r\x03\x18\xc8\x01R\timageUrls\x12\x16\n" +
-	"\x06status\x18\a \x01(\tR\x06status\x12\x1f\n" +
-	"\vis_featured\x18\b \x01(\bR\n" +
+	"\x06status\x18\x06 \x01(\tR\x06status\x12\x1f\n" +
+	"\vis_featured\x18\a \x01(\bR\n" +
 	"isFeatured\x12 \n" +
-	"\x04tags\x18\t \x03(\tB\f\xfaB\t\x92\x01\x06\"\x04r\x02\x18\x1eR\x04tags\"\x8a\x02\n" +
+	"\x04tags\x18\b \x03(\tB\f\xfaB\t\x92\x01\x06\"\x04r\x02\x18\x1eR\x04tags\"\x8a\x02\n" +
 	"\x15CreateProductResponse\x12\x1d\n" +
 	"\n" +
 	"product_id\x18\x01 \x01(\tR\tproductId\x12\x12\n" +
@@ -368,9 +358,9 @@ const file_product_proto_rawDesc = "" +
 	"\vstatus_code\x18\x03 \x01(\x05R\n" +
 	"statusCode\x12K\n" +
 	"\fproduct_data\x18\x04 \x01(\v2&.product_service.CreateProductResponseH\x00R\vproductDataB\b\n" +
-	"\x06result2\x86\x01\n" +
-	"\x0eProductService\x12t\n" +
-	"\rCreateProduct\x12%.product_service.CreateProductRequest\x1a&.product_service.CreateProductResponse\"\x14\x82\xd3\xe4\x93\x02\x0e:\x01*\"\t/productsB\xc6\x01\n" +
+	"\x06result2\x81\x01\n" +
+	"\x0eProductService\x12o\n" +
+	"\rCreateProduct\x12%.product_service.CreateProductRequest\x1a!.product_service.StandardResponse\"\x14\x82\xd3\xe4\x93\x02\x0e:\x01*\"\t/productsB\xc6\x01\n" +
 	"\x13com.product_serviceB\fProductProtoP\x01ZIgithub.com/Likhon22/ecom_microservice/product_service/proto/gen;productpb\xa2\x02\x03PXX\xaa\x02\x0eProductService\xca\x02\x0eProductService\xe2\x02\x1aProductService\\GPBMetadata\xea\x02\x0eProductServiceb\x06proto3"
 
 var (
@@ -394,7 +384,7 @@ var file_product_proto_goTypes = []any{
 var file_product_proto_depIdxs = []int32{
 	1, // 0: product_service.StandardResponse.product_data:type_name -> product_service.CreateProductResponse
 	0, // 1: product_service.ProductService.CreateProduct:input_type -> product_service.CreateProductRequest
-	1, // 2: product_service.ProductService.CreateProduct:output_type -> product_service.CreateProductResponse
+	2, // 2: product_service.ProductService.CreateProduct:output_type -> product_service.StandardResponse
 	2, // [2:3] is the sub-list for method output_type
 	1, // [1:2] is the sub-list for method input_type
 	1, // [1:1] is the sub-list for extension type_name

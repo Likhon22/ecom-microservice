@@ -14,7 +14,7 @@ type service struct {
 	repo productrepo.ProductRepo
 }
 type Service interface {
-	Create(ctx context.Context, payload *productpb.CreateProductRequest) (*productpb.CreateProductResponse, error)
+	Create(ctx context.Context, payload *productpb.CreateProductRequest, email string) (*productpb.CreateProductResponse, error)
 }
 
 func NewService(repo productrepo.ProductRepo) Service {
@@ -23,7 +23,7 @@ func NewService(repo productrepo.ProductRepo) Service {
 	}
 }
 
-func (s *service) Create(ctx context.Context, payload *productpb.CreateProductRequest) (*productpb.CreateProductResponse, error) {
+func (s *service) Create(ctx context.Context, payload *productpb.CreateProductRequest, email string) (*productpb.CreateProductResponse, error) {
 	uid := uuid.New().String()
 
 	// Map gRPC payload to domain.Product
@@ -33,7 +33,7 @@ func (s *service) Create(ctx context.Context, payload *productpb.CreateProductRe
 		Description: payload.Description,
 		Category:    payload.Category,
 		Price:       payload.Price,
-		CreatedBy:   payload.CreatedBy,
+		CreatedBy:   email,
 		ImageURLs:   payload.ImageUrls,
 		Status:      payload.Status,
 		IsFeatured:  payload.IsFeatured,

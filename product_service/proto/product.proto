@@ -6,7 +6,7 @@ import "validate/validate.proto";
 import "google/api/annotations.proto";
 
 service ProductService {
-rpc CreateProduct(CreateProductRequest) returns (CreateProductResponse) {
+rpc CreateProduct(CreateProductRequest) returns (StandardResponse) {
         option (google.api.http) = {
             post: "/products"
             body: "*"
@@ -20,11 +20,10 @@ message CreateProductRequest {
     string description = 2 [(validate.rules).string.min_len = 1, (validate.rules).string.max_len = 500];
     string category = 3 [(validate.rules).string.min_len = 1, (validate.rules).string.max_len = 50];
     double price = 4 [(validate.rules).double.gt = 0];
-    string created_by = 5 [(validate.rules).string.min_len = 1];
-    repeated string image_urls = 6 [(validate.rules).repeated.items.string.max_len = 200];
-    string status = 7;
-    bool is_featured = 8;
-    repeated string tags = 9 [(validate.rules).repeated.items.string.max_len = 30];
+    repeated string image_urls = 5 [(validate.rules).repeated.items.string.max_len = 200];
+    string status = 6;
+    bool is_featured = 7;
+    repeated string tags = 8 [(validate.rules).repeated.items.string.max_len = 30];
 }
 
 message CreateProductResponse {
