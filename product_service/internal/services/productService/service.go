@@ -2,6 +2,8 @@ package productservice
 
 import (
 	"context"
+	"errors"
+	client "product_service/internal/client/product"
 	"product_service/internal/domain"
 	productrepo "product_service/internal/repo/productRepo"
 	"product_service/internal/utils"
@@ -11,20 +13,30 @@ import (
 )
 
 type service struct {
-	repo productrepo.ProductRepo
+	client client.Client
+	repo   productrepo.ProductRepo
 }
 type Service interface {
 	Create(ctx context.Context, payload *productpb.CreateProductRequest, email string) (*productpb.CreateProductResponse, error)
 }
 
-func NewService(repo productrepo.ProductRepo) Service {
+func NewService(client client.Client, repo productrepo.ProductRepo) Service {
 	return &service{
-		repo: repo,
+		repo:   repo,
+		client: client,
 	}
 }
 
 func (s *service) Create(ctx context.Context, payload *productpb.CreateProductRequest, email string) (*productpb.CreateProductResponse, error) {
+
+	customer, err := s.client.GetCustomerByEmail(ctx, &productpb.GetCustomerByEmailRequest{Email: email})
 	uid := uuid.New().String()
+	if err != nil {
+		return nil, err
+	}
+	if customer == nil {
+		return nil, errors.New("email is invalid")
+	}
 
 	// Map gRPC payload to domain.Product
 	productData := &domain.Product{
@@ -33,7 +45,7 @@ func (s *service) Create(ctx context.Context, payload *productpb.CreateProductRe
 		Description: payload.Description,
 		Category:    payload.Category,
 		Price:       payload.Price,
-		CreatedBy:   email,
+		CreatedBy:   customer.Email,
 		ImageURLs:   payload.ImageUrls,
 		Status:      payload.Status,
 		IsFeatured:  payload.IsFeatured,

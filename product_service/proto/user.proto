@@ -1,8 +1,9 @@
 syntax = "proto3";
 
 package user_service;
-option go_package = "github.com/Likhon22/ecom_microservice/auth_service/proto/gen;userpb";
+option go_package = "github.com/Likhon22/ecom_microservice/product_service/proto/gen;productpb";
 import "validate/validate.proto";
+import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
 service UserService {
   rpc CreateCustomer (CreateCustomerRequest) returns (CreateCustomerResponse) {

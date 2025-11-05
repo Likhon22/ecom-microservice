@@ -9,9 +9,10 @@ import (
 )
 
 type Config struct {
-	Version     string
-	ServiceName string
-	Addr        string
+	Version            string
+	ServiceName        string
+	Addr               string
+	UserServiceAddress string
 }
 
 var (
@@ -26,10 +27,12 @@ func loadConfig() {
 	version := os.Getenv("VERSION")
 	serviceName := os.Getenv("SERVICE_NAME")
 	addr := os.Getenv("ADDR")
+	user_service_addr := os.Getenv("USER_SERVICE_ADDR")
 	config = &Config{
-		Version:     version,
-		ServiceName: serviceName,
-		Addr:        addr,
+		Version:            version,
+		ServiceName:        serviceName,
+		Addr:               addr,
+		UserServiceAddress: user_service_addr,
 	}
 	validateMainConfig(config)
 }
@@ -40,7 +43,7 @@ func GetConfig() *Config {
 }
 
 func validateMainConfig(cfg *Config) {
-	if cfg.Version == "" || cfg.Addr == "" || cfg.ServiceName == "" {
+	if cfg.Version == "" || cfg.Addr == "" || cfg.ServiceName == "" || cfg.UserServiceAddress == "" {
 		log.Fatal().Msg("missing core service environment variables")
 	}
 
