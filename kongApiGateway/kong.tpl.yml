@@ -107,8 +107,17 @@ services:
         paths: ["/products"]
         methods: [GET]
       - name: get-product-by-id
-        paths: ["/products/:product_id"]
+        paths: ["/products/:category/:product_id"]
         methods: [GET]
+      - name: update-product
+        paths: ["~/products/[^/]+/[^/]+"]
+        methods: [PATCH]
+        plugins:
+          - name: auth-token-validator
+            config:
+              jwt_secret: "${JWT_ACCESS_SECRET}"
+          - name: user-context-injector
+
     plugins:
       - name: grpc-gateway
         config:

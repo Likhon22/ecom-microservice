@@ -2,7 +2,6 @@ syntax = "proto3";
 
 package product_service;
 option go_package = "github.com/Likhon22/ecom_microservice/product_service/proto/gen;productpb";
-import "validate/validate.proto";
 import "google/api/annotations.proto";
 
 service ProductService {
@@ -15,7 +14,7 @@ rpc CreateProduct(CreateProductRequest) returns (StandardResponse) {
 rpc GetProduct (GetProductsRequest) returns (StandardResponse){
         option (google.api.http) = {
             get: "/products"
-        };
+         };
 
    }
 rpc GetProductById(GetProductByIdRequest) returns (StandardResponse) {
@@ -23,18 +22,25 @@ rpc GetProductById(GetProductByIdRequest) returns (StandardResponse) {
             get: "/products/{category}/{product_id}"
         };
     }
+rpc UpdateProduct(UpdateProductRequest) returns (StandardResponse) {
+        option (google.api.http) = {
+            patch: "/products/{category}/{product_id}"
+            body: "*"
+        };
+    }
+    
 }
 
 
 message CreateProductRequest {
-    string name = 1;
-    string description = 2;
-    string category = 3;
-    double price = 4;
-    repeated string image_urls = 5;
+    string name = 1 ;
+    string description = 2 ;
+    string category = 3 ;
+    double price = 4 ;
+    repeated string image_urls = 5 ;
     string status = 6;
     bool is_featured = 7;
-    repeated string tags = 8;
+    repeated string tags = 8 ;
 }
 
 message CreateProductResponse {
@@ -74,12 +80,42 @@ message GetProductsResponse {
    }
 
 message GetProductByIdRequest {
-   string category = 1;     
-    string product_id = 2;
+  string category = 1;      
+  string product_id = 2;
 }
 
 message GetProductByIdResponse {
     Product product = 1;
+}
+
+
+message UpdateProductRequest {
+
+    string category = 1 ;
+    string product_id = 2 ;
+     
+    // Optional update fields
+    string name = 3 ;
+    string description = 4 ;
+    string new_category = 5 ;
+    double price = 6 ;
+    bool is_featured = 7;
+    repeated string tags = 8 ;
+    repeated string image_urls = 9 ;
+    string status = 10 ;
+    string created_by = 11;
+}
+message UpdateProductResponse {
+    string product_id = 1;
+    string name = 2;
+    string description = 3;
+    string category = 4;
+    double price = 5;
+    repeated string image_urls = 6;
+    string status = 7;
+    bool is_featured = 8;
+    repeated string tags = 9;
+    string updated_at = 10; 
 }
 message StandardResponse {
   bool success = 1;
@@ -89,5 +125,6 @@ message StandardResponse {
    CreateProductResponse product_data = 4;
    GetProductsResponse products=5;
    GetProductByIdResponse product = 6;
+   UpdateProductResponse updatedProduct=7;
     }
 }
