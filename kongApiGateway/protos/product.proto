@@ -12,6 +12,12 @@ rpc CreateProduct(CreateProductRequest) returns (StandardResponse) {
             body: "*"
         };
     }
+rpc GetProduct (GetProductsRequest) returns (StandardResponse){
+        option (google.api.http) = {
+            get: "/products"
+        };
+
+   }
 }
 
 
@@ -39,11 +45,38 @@ message CreateProductResponse {
     
 }
 
+message Product {
+    string product_id = 1;
+    string name = 2;
+    string description = 3;
+    string category = 4;
+    double price = 5;
+    repeated string image_urls = 6;
+    string status = 7;
+    bool is_featured = 8;
+    repeated string tags = 9;
+    string created_by = 10;
+}
+message GetProductsRequest {
+    string category = 1;   
+    string search = 2;       
+    string sort_by = 3;     
+    int32 limit = 4;         
+    int32 page = 5;        
+}
+
+message GetProductsResponse {
+    repeated Product products = 1;
+    int32 total_count = 2;   
+    int32 current_page = 3;  
+    int32 total_pages = 4;   
+}
 message StandardResponse {
   bool success = 1;
   string message = 2;
   int32 status_code = 3;
   oneof result {
-    CreateProductResponse product_data = 4;
+   CreateProductResponse product_data = 4;
+    GetProductsResponse products=5;
     }
 }

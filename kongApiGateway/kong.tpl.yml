@@ -103,7 +103,9 @@ services:
             config:
               jwt_secret: "${JWT_ACCESS_SECRET}"
           - name: user-context-injector
-
+      - name: get-products
+        paths: ["/products"]
+        methods: [GET]
     plugins:
       - name: grpc-gateway
         config:
