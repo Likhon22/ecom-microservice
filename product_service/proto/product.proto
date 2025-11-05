@@ -22,7 +22,7 @@ message CreateProductRequest {
     double price = 4 [(validate.rules).double.gt = 0];
     string created_by = 5 [(validate.rules).string.min_len = 1];
     repeated string image_urls = 6 [(validate.rules).repeated.items.string.max_len = 200];
-    string status = 7 [(validate.rules).string.in = "active,inactive"];
+    string status = 7;
     bool is_featured = 8;
     repeated string tags = 9 [(validate.rules).repeated.items.string.max_len = 30];
 }

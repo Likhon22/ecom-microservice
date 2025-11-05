@@ -333,7 +333,7 @@ var File_product_proto protoreflect.FileDescriptor
 
 const file_product_proto_rawDesc = "" +
 	"\n" +
-	"\rproduct.proto\x12\x0fproduct_service\x1a\x17validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\"\xf9\x02\n" +
+	"\rproduct.proto\x12\x0fproduct_service\x1a\x17validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\"\xe1\x02\n" +
 	"\x14CreateProductRequest\x12\x1d\n" +
 	"\x04name\x18\x01 \x01(\tB\t\xfaB\x06r\x04\x10\x01\x18dR\x04name\x12,\n" +
 	"\vdescription\x18\x02 \x01(\tB\n" +
@@ -344,8 +344,8 @@ const file_product_proto_rawDesc = "" +
 	"created_by\x18\x05 \x01(\tB\a\xfaB\x04r\x02\x10\x01R\tcreatedBy\x12,\n" +
 	"\n" +
 	"image_urls\x18\x06 \x03(\tB\r\xfaB\n" +
-	"\x92\x01\a\"\x05r\x03\x18\xc8\x01R\timageUrls\x12.\n" +
-	"\x06status\x18\a \x01(\tB\x16\xfaB\x13r\x11R\x0factive,inactiveR\x06status\x12\x1f\n" +
+	"\x92\x01\a\"\x05r\x03\x18\xc8\x01R\timageUrls\x12\x16\n" +
+	"\x06status\x18\a \x01(\tR\x06status\x12\x1f\n" +
 	"\vis_featured\x18\b \x01(\bR\n" +
 	"isFeatured\x12 \n" +
 	"\x04tags\x18\t \x03(\tB\f\xfaB\t\x92\x01\x06\"\x04r\x02\x18\x1eR\x04tags\"\x8a\x02\n" +

@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	productservice "product_service/internal/services/productService"
+	"product_service/internal/utils"
 	productpb "product_service/proto/gen"
 )
 
@@ -21,13 +22,15 @@ func NewProductHandler(service productservice.Service) *handler {
 
 func (h *handler) CreateProduct(ctx context.Context, req *productpb.CreateProductRequest) (*productpb.CreateProductResponse, error) {
 
-	data := req
 	if err := req.ValidateAll(); err != nil {
 		log.Println(err)
 	}
-	return &productpb.CreateProductResponse{
-		Name:  data.GetName(),
-		Price: data.GetPrice(),
-	}, nil
+	log.Println(req)
+	product, err := h.service.Create(ctx, req)
+	log.Println(err)
+	if err != nil {
+		return nil, utils.MapError(err)
 
+	}
+	return product, nil
 }

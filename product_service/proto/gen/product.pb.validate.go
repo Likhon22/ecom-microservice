@@ -128,16 +128,7 @@ func (m *CreateProductRequest) validate(all bool) error {
 
 	}
 
-	if _, ok := _CreateProductRequest_Status_InLookup[m.GetStatus()]; !ok {
-		err := CreateProductRequestValidationError{
-			field:  "Status",
-			reason: "value must be in list [active,inactive]",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
+	// no validation rules for Status
 
 	// no validation rules for IsFeatured
 
@@ -236,10 +227,6 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = CreateProductRequestValidationError{}
-
-var _CreateProductRequest_Status_InLookup = map[string]struct{}{
-	"active,inactive": {},
-}
 
 // Validate checks the field values on CreateProductResponse with the rules
 // defined in the proto definition for this message. If any rules are

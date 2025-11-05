@@ -1,6 +1,7 @@
 package db
 
 import (
+	"context"
 	"log"
 	"sync"
 
@@ -15,7 +16,7 @@ var (
 )
 
 func loadDBConfig() {
-	loadedCfg, err := config.LoadDefaultConfig(nil,
+	loadedCfg, err := config.LoadDefaultConfig(context.Background(),
 		config.WithRegion("us-east-1"),
 		config.WithCredentialsProvider(
 			credentials.NewStaticCredentialsProvider("dummy", "dummy", ""),
