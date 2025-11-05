@@ -89,3 +89,20 @@ func (h *handler) GetProductById(ctx context.Context, req *productpb.GetProductB
 	}, nil
 
 }
+
+func (h *handler) UpdateProduct(ctx context.Context, req *productpb.UpdateProductRequest) (*productpb.StandardResponse, error) {
+	product, err := h.service.Update(ctx, req)
+	if err != nil {
+		return nil, utils.MapError(err)
+
+	}
+	return &productpb.StandardResponse{
+		Success:    true,
+		Message:    "product update successful",
+		StatusCode: 200,
+		Result: &productpb.StandardResponse_UpdatedProduct{
+			UpdatedProduct: product,
+		},
+	}, nil
+
+}

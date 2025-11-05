@@ -22,6 +22,7 @@ type Service interface {
 	Create(ctx context.Context, payload *productpb.CreateProductRequest, email string) (*productpb.CreateProductResponse, error)
 	GetAll(ctx context.Context, req *productpb.GetProductsRequest) (*productpb.GetProductsResponse, error)
 	GetById(ctx context.Context, req *productpb.GetProductByIdRequest) (*productpb.GetProductByIdResponse, error)
+	Update(ctx context.Context, req *productpb.UpdateProductRequest) (*productpb.UpdateProductResponse, error)
 }
 
 func NewService(client client.Client, repo productrepo.ProductRepo) Service {
@@ -120,5 +121,59 @@ func (s *service) GetById(ctx context.Context, req *productpb.GetProductByIdRequ
 	}
 	return &productpb.GetProductByIdResponse{
 		Product: pbProduct,
+	}, nil
+}
+
+func (s *service) Update(ctx context.Context, req *productpb.UpdateProductRequest) (*productpb.UpdateProductResponse, error) {
+
+	updates := make(map[string]interface{})
+
+	if req.Name != nil {
+		updates["name"] = *req.Name
+	}
+
+	if req.Description != nil {
+		updates["description"] = *req.Description
+	}
+
+	if req.NewCategory != nil {
+		updates["category"] = *req.NewCategory
+	}
+
+	if req.Price != nil {
+		updates["price"] = *req.Price
+	}
+
+	if req.IsFeatured != nil {
+		updates["is_featured"] = *req.IsFeatured
+	}
+
+	if len(req.Tags) > 0 {
+		updates["tags"] = req.Tags
+	}
+
+	if len(req.ImageUrls) > 0 {
+		updates["image_urls"] = req.ImageUrls
+	}
+
+	if req.Status != nil {
+		updates["status"] = *req.Status
+	}
+	product, err := s.repo.Update(ctx, req.ProductId, req.Category, updates)
+	if err != nil {
+		return nil, err
+
+	}
+	return &productpb.UpdateProductResponse{
+		ProductId:   product.ProductID,
+		Name:        product.Name,
+		Description: product.Description,
+		Category:    product.Category,
+		Price:       product.Price,
+		ImageUrls:   product.ImageURLs,
+		Status:      product.Status,
+		IsFeatured:  product.IsFeatured,
+		Tags:        product.Tags,
+		UpdatedAt:   product.UpdatedAt.Format(time.RFC3339),
 	}, nil
 }

@@ -23,6 +23,12 @@ rpc GetProductById(GetProductByIdRequest) returns (StandardResponse) {
             get: "/products/{category}/{product_id}"
         };
     }
+rpc UpdateProduct(UpdateProductRequest) returns (StandardResponse) {
+        option (google.api.http) = {
+            post: "/update/{category}/{product_id}"
+            body: "*"
+        };
+    }
 }
 
 
@@ -74,12 +80,41 @@ message GetProductsResponse {
    }
 
 message GetProductByIdRequest {
-  string category = 1;      // NEW: Required for composite key
+  string category = 1;      
   string product_id = 2;
 }
 
 message GetProductByIdResponse {
     Product product = 1;
+}
+
+
+message UpdateProductRequest {
+
+    string category = 1 [(validate.rules).string.min_len = 1];
+    string product_id = 2 [(validate.rules).string.min_len = 1];
+    
+    // Optional update fields - IF PROVIDED, must be valid
+    optional string name = 3 [(validate.rules).string = {min_len: 1, max_len: 100}];
+    optional string description = 4 [(validate.rules).string = {max_len: 500}];
+    optional string new_category = 5 [(validate.rules).string = {min_len: 1, max_len: 50}];
+    optional double price = 6 [(validate.rules).double.gte = 0];
+    optional bool is_featured = 7;
+    repeated string tags = 8 [(validate.rules).repeated = {items: {string: {min_len: 1, max_len: 30}}}];
+    repeated string image_urls = 9 [(validate.rules).repeated = {items: {string: {min_len: 1, max_len: 200}}}];
+    optional string status = 10 [(validate.rules).string = {min_len: 1}];
+}
+message UpdateProductResponse {
+    string product_id = 1;
+    string name = 2;
+    string description = 3;
+    string category = 4;
+    double price = 5;
+    repeated string image_urls = 6;
+    string status = 7;
+    bool is_featured = 8;
+    repeated string tags = 9;
+    string updated_at = 10; 
 }
 message StandardResponse {
   bool success = 1;
@@ -89,5 +124,6 @@ message StandardResponse {
    CreateProductResponse product_data = 4;
    GetProductsResponse products=5;
    GetProductByIdResponse product = 6;
+   UpdateProductResponse updatedProduct=7;
     }
 }
