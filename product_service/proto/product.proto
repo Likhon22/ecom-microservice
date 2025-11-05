@@ -25,10 +25,11 @@ rpc GetProductById(GetProductByIdRequest) returns (StandardResponse) {
     }
 rpc UpdateProduct(UpdateProductRequest) returns (StandardResponse) {
         option (google.api.http) = {
-            post: "/update/{category}/{product_id}"
+            patch: "/products/{category}/{product_id}"
             body: "*"
         };
     }
+   
 }
 
 
@@ -103,6 +104,7 @@ message UpdateProductRequest {
     repeated string tags = 8 [(validate.rules).repeated = {items: {string: {min_len: 1, max_len: 30}}}];
     repeated string image_urls = 9 [(validate.rules).repeated = {items: {string: {min_len: 1, max_len: 200}}}];
     optional string status = 10 [(validate.rules).string = {min_len: 1}];
+      
 }
 message UpdateProductResponse {
     string product_id = 1;

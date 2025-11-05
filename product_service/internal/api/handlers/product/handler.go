@@ -26,7 +26,7 @@ func NewProductHandler(service productservice.Service) *handler {
 func (h *handler) CreateProduct(ctx context.Context, req *productpb.CreateProductRequest) (*productpb.StandardResponse, error) {
 
 	if err := req.ValidateAll(); err != nil {
-		log.Println(err)
+		return nil, utils.MapError(err)
 	}
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
@@ -37,7 +37,6 @@ func (h *handler) CreateProduct(ctx context.Context, req *productpb.CreateProduc
 		return nil, utils.MapError(errors.New("user email not found in metadata"))
 	}
 
-	log.Println(req)
 	product, err := h.service.Create(ctx, req, emails[0])
 	log.Println(err)
 	if err != nil {
@@ -91,7 +90,19 @@ func (h *handler) GetProductById(ctx context.Context, req *productpb.GetProductB
 }
 
 func (h *handler) UpdateProduct(ctx context.Context, req *productpb.UpdateProductRequest) (*productpb.StandardResponse, error) {
-	product, err := h.service.Update(ctx, req)
+	if err := req.ValidateAll(); err != nil {
+		return nil, utils.MapError(err)
+	}
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return nil, utils.MapError(errors.New("missing authentication metadata"))
+	}
+	emails := md.Get("x-user-email")
+	if len(emails) == 0 {
+		return nil, utils.MapError(errors.New("user email not found in metadata"))
+	}
+	log.Println(emails[0])
+	product, err := h.service.Update(ctx, req, emails[0])
 	if err != nil {
 		return nil, utils.MapError(err)
 

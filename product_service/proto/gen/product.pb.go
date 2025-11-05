@@ -1024,13 +1024,13 @@ const file_product_proto_rawDesc = "" +
 	"\bproducts\x18\x05 \x01(\v2$.product_service.GetProductsResponseH\x00R\bproducts\x12C\n" +
 	"\aproduct\x18\x06 \x01(\v2'.product_service.GetProductByIdResponseH\x00R\aproduct\x12P\n" +
 	"\x0eupdatedProduct\x18\a \x01(\v2&.product_service.UpdateProductResponseH\x00R\x0eupdatedProductB\b\n" +
-	"\x06result2\xfb\x03\n" +
+	"\x06result2\xfd\x03\n" +
 	"\x0eProductService\x12o\n" +
 	"\rCreateProduct\x12%.product_service.CreateProductRequest\x1a!.product_service.StandardResponse\"\x14\x82\xd3\xe4\x93\x02\x0e:\x01*\"\t/products\x12g\n" +
 	"\n" +
 	"GetProduct\x12#.product_service.GetProductsRequest\x1a!.product_service.StandardResponse\"\x11\x82\xd3\xe4\x93\x02\v\x12\t/products\x12\x86\x01\n" +
-	"\x0eGetProductById\x12&.product_service.GetProductByIdRequest\x1a!.product_service.StandardResponse\")\x82\xd3\xe4\x93\x02#\x12!/products/{category}/{product_id}\x12\x85\x01\n" +
-	"\rUpdateProduct\x12%.product_service.UpdateProductRequest\x1a!.product_service.StandardResponse\"*\x82\xd3\xe4\x93\x02$:\x01*\"\x1f/update/{category}/{product_id}B\xc6\x01\n" +
+	"\x0eGetProductById\x12&.product_service.GetProductByIdRequest\x1a!.product_service.StandardResponse\")\x82\xd3\xe4\x93\x02#\x12!/products/{category}/{product_id}\x12\x87\x01\n" +
+	"\rUpdateProduct\x12%.product_service.UpdateProductRequest\x1a!.product_service.StandardResponse\",\x82\xd3\xe4\x93\x02&:\x01*2!/products/{category}/{product_id}B\xc6\x01\n" +
 	"\x13com.product_serviceB\fProductProtoP\x01ZIgithub.com/Likhon22/ecom_microservice/product_service/proto/gen;productpb\xa2\x02\x03PXX\xaa\x02\x0eProductService\xca\x02\x0eProductService\xe2\x02\x1aProductService\\GPBMetadata\xea\x02\x0eProductServiceb\x06proto3"
 
 var (

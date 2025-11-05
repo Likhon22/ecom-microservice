@@ -22,7 +22,7 @@ type Service interface {
 	Create(ctx context.Context, payload *productpb.CreateProductRequest, email string) (*productpb.CreateProductResponse, error)
 	GetAll(ctx context.Context, req *productpb.GetProductsRequest) (*productpb.GetProductsResponse, error)
 	GetById(ctx context.Context, req *productpb.GetProductByIdRequest) (*productpb.GetProductByIdResponse, error)
-	Update(ctx context.Context, req *productpb.UpdateProductRequest) (*productpb.UpdateProductResponse, error)
+	Update(ctx context.Context, req *productpb.UpdateProductRequest, email string) (*productpb.UpdateProductResponse, error)
 }
 
 func NewService(client client.Client, repo productrepo.ProductRepo) Service {
@@ -124,7 +124,19 @@ func (s *service) GetById(ctx context.Context, req *productpb.GetProductByIdRequ
 	}, nil
 }
 
-func (s *service) Update(ctx context.Context, req *productpb.UpdateProductRequest) (*productpb.UpdateProductResponse, error) {
+func (s *service) Update(ctx context.Context, req *productpb.UpdateProductRequest, email string) (*productpb.UpdateProductResponse, error) {
+
+	if email == "" {
+		return nil, errors.New("unauthorized")
+	}
+	reqProduct, err := s.repo.GetById(ctx, req.ProductId, req.Category)
+	if email == "" {
+		return nil, err
+	}
+	if reqProduct.CreatedBy != email {
+		return nil, errors.New("only person that created the product can update")
+
+	}
 
 	updates := make(map[string]interface{})
 
