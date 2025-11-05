@@ -18,6 +18,11 @@ rpc GetProduct (GetProductsRequest) returns (StandardResponse){
         };
 
    }
+rpc GetProductById(GetProductByIdRequest) returns (StandardResponse) {
+        option (google.api.http) = {
+            get: "/products/{category}/{product_id}"
+        };
+    }
 }
 
 
@@ -60,16 +65,21 @@ message Product {
 message GetProductsRequest {
     string category = 1;   
     string search = 2;       
-    string sort_by = 3;     
-    int32 limit = 4;         
-    int32 page = 5;        
+       
 }
 
 message GetProductsResponse {
     repeated Product products = 1;
     int32 total_count = 2;   
-    int32 current_page = 3;  
-    int32 total_pages = 4;   
+   }
+
+message GetProductByIdRequest {
+   string category = 1;     
+    string product_id = 2;
+}
+
+message GetProductByIdResponse {
+    Product product = 1;
 }
 message StandardResponse {
   bool success = 1;
@@ -77,6 +87,7 @@ message StandardResponse {
   int32 status_code = 3;
   oneof result {
    CreateProductResponse product_data = 4;
-    GetProductsResponse products=5;
+   GetProductsResponse products=5;
+   GetProductByIdResponse product = 6;
     }
 }

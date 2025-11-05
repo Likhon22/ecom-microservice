@@ -106,6 +106,9 @@ services:
       - name: get-products
         paths: ["/products"]
         methods: [GET]
+      - name: get-product-by-id
+        paths: ["/products/:product_id"]
+        methods: [GET]
     plugins:
       - name: grpc-gateway
         config:
