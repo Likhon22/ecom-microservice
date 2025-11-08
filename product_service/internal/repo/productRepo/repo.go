@@ -2,6 +2,7 @@ package productrepo
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"product_service/internal/domain"
 	"strings"
@@ -27,6 +28,7 @@ type ProductRepo interface {
 	GetAll(ctx context.Context, filters *FilterOptions) ([]*domain.Product, int, error)
 	GetById(ctx context.Context, productId, category string) (*domain.Product, error)
 	Update(ctx context.Context, productId, category string, updates map[string]interface{}) (*domain.Product, error)
+	Delete(ctx context.Context, productId, category string) (*domain.Product, error)
 }
 
 func NewRepo(client *dynamodb.Client, tableName string) ProductRepo {
@@ -199,4 +201,28 @@ func (r *productRepo) Update(ctx context.Context, productId, category string, up
 	}
 
 	return &product, nil
+}
+
+func (r *productRepo) Delete(ctx context.Context, productId, category string) (*domain.Product, error) {
+	result, err := r.client.DeleteItem(ctx, &dynamodb.DeleteItemInput{
+		TableName: aws.String(r.tableName),
+		Key: map[string]types.AttributeValue{
+			"Category":  &types.AttributeValueMemberS{Value: category},
+			"ProductID": &types.AttributeValueMemberS{Value: productId},
+		},
+		ReturnValues: types.ReturnValueAllOld,
+	})
+	if err != nil {
+		return nil, err
+
+	}
+	if result.Attributes != nil {
+		var deleteProduct domain.Product
+		if err := attributevalue.UnmarshalMap(result.Attributes, &deleteProduct); err != nil {
+			return nil, err
+		}
+		return &deleteProduct, nil
+	}
+	return nil, errors.New("product not found")
+
 }

@@ -117,3 +117,21 @@ func (h *handler) UpdateProduct(ctx context.Context, req *productpb.UpdateProduc
 	}, nil
 
 }
+
+func (h *handler) DeleteProduct(ctx context.Context, req *productpb.DeleteProductRequest) (*productpb.StandardResponse, error) {
+
+	result, err := h.service.Delete(ctx, req)
+	if err != nil {
+		return nil, utils.MapError(err)
+
+	}
+	return &productpb.StandardResponse{
+		Success:    true,
+		Message:    "Product deleted successfully",
+		StatusCode: 200,
+		Result: &productpb.StandardResponse_DeletedProduct{
+			DeletedProduct: result,
+		},
+	}, nil
+
+}

@@ -23,6 +23,7 @@ type Service interface {
 	GetAll(ctx context.Context, req *productpb.GetProductsRequest) (*productpb.GetProductsResponse, error)
 	GetById(ctx context.Context, req *productpb.GetProductByIdRequest) (*productpb.GetProductByIdResponse, error)
 	Update(ctx context.Context, req *productpb.UpdateProductRequest, email string) (*productpb.UpdateProductResponse, error)
+	Delete(ctx context.Context, req *productpb.DeleteProductRequest) (*productpb.DeleteProductResponse, error)
 }
 
 func NewService(client client.Client, repo productrepo.ProductRepo) Service {
@@ -188,4 +189,32 @@ func (s *service) Update(ctx context.Context, req *productpb.UpdateProductReques
 		Tags:        product.Tags,
 		UpdatedAt:   product.UpdatedAt.Format(time.RFC3339),
 	}, nil
+}
+
+func (s *service) Delete(ctx context.Context, req *productpb.DeleteProductRequest) (*productpb.DeleteProductResponse, error) {
+	productId := req.ProductId
+	category := req.Category
+
+	if productId == "" || category == "" {
+		return nil, errors.New("bad request")
+
+	}
+	product, err := s.repo.Delete(ctx, productId, category)
+	if err != nil {
+		return nil, err
+
+	}
+	pb := &productpb.Product{
+		ProductId:   product.ProductID,
+		Name:        product.Name,
+		Description: product.Description,
+		Category:    product.Category,
+		Price:       product.Price,
+		ImageUrls:   product.ImageURLs,
+		Status:      product.Status,
+		IsFeatured:  product.IsFeatured,
+		Tags:        product.Tags,
+	}
+	return &productpb.DeleteProductResponse{Product: pb}, nil
+
 }
