@@ -118,6 +118,14 @@ services:
               jwt_secret: "very very secret access token"
           - name: user-context-injector
 
+      - name: delete-product
+        paths: ["~/products/[^/]+/[^/]+"]
+        methods: [DELETE]
+        plugins:
+          - name: auth-token-validator
+            config:
+              jwt_secret: "very very secret access token"
+
     plugins:
       - name: grpc-gateway
         config:

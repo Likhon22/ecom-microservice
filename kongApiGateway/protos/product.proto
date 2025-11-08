@@ -28,6 +28,15 @@ rpc UpdateProduct(UpdateProductRequest) returns (StandardResponse) {
             body: "*"
         };
     }
+ rpc DeleteProduct (DeleteProductRequest) returns (StandardResponse) {
+ 
+       option (google.api.http)={
+ 
+        delete: "/products/{category}/{product_id}"
+   
+   };
+ 
+ }  
     
 }
 
@@ -117,6 +126,13 @@ message UpdateProductResponse {
     repeated string tags = 9;
     string updated_at = 10; 
 }
+message DeleteProductRequest {
+string product_id =1;
+string category =2;
+}
+message DeleteProductResponse {
+ Product product = 1;
+}
 message StandardResponse {
   bool success = 1;
   string message = 2;
@@ -126,5 +142,6 @@ message StandardResponse {
    GetProductsResponse products=5;
    GetProductByIdResponse product = 6;
    UpdateProductResponse updatedProduct=7;
+   DeleteProductResponse deleted_product=8;
     }
 }
