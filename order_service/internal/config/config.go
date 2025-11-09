@@ -4,7 +4,6 @@ import (
 	"os"
 	"sync"
 
-	"github.com/joho/godotenv"
 	"github.com/rs/zerolog/log"
 )
 
@@ -22,9 +21,7 @@ var (
 )
 
 func loadConfig() {
-	if err := godotenv.Load(); err != nil {
-		log.Warn().Err(err).Msg("no .env file found, using system environment variables")
-	}
+
 	version := os.Getenv("VERSION")
 	serviceName := os.Getenv("SERVICE_NAME")
 	addr := os.Getenv("ADDR")
