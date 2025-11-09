@@ -45,7 +45,7 @@ func GetConfig() *Config {
 
 }
 func validateMainConfig(cfg *Config) {
-	if cfg.Version == "" || cfg.Addr == "" || cfg.ServiceName == "" || cfg.User_Service_Addr == "" {
+	if cfg.Version == "" || cfg.Addr == "" || cfg.ServiceName == "" {
 		log.Fatal().Msg("missing core service environment variables")
 	}
 

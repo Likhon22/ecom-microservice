@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package order_service;
+option go_package = "github.com/Likhon22/ecom_microservice/auth_service/proto/gen;orderpb";
+import "validate/validate.proto";
+import "google/api/annotations.proto";
+service OrderService {
+  rpc CreateOrder (CreateOrderRequest) returns (StandardResponse){
+   option (google.api.http) = {
+     post: "/order"
+     body: "*"
+   };
+  }
+}
+
+message CreateOrderRequest {
+  string user_id = 1;
+  string product_id = 2;
+  int32 quantity = 3;
+}
+
+message CreateOrderResponse {
+  string order_id = 1;
+  string status = 2; 
+}
+
+message StandardResponse {
+
+bool success = 1;
+  string message = 2;
+  int32 status_code = 3;
+  oneof result {
+    CreateOrderResponse order_create_data = 4;
+    
+
+ }
+}

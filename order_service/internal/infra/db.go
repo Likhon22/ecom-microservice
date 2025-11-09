@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/jmoiron/sqlx"
+	_ "github.com/lib/pq"
 )
 
 var (
@@ -14,24 +15,27 @@ var (
 )
 
 func ConnectDb(cnf *config.DBConfig) (*sqlx.DB, error) {
-
 	var err error
+
 	once.Do(func() {
-		dbInstance, err = sqlx.Connect("postgres", "user=foo dbname=bar sslmode=disable")
+		dbInstance, err = sqlx.Connect(cnf.DBDriver, cnf.DBUrl)
 		if err != nil {
 			return
-
 		}
+
 		err = dbInstance.Ping()
 		if err != nil {
 			return
-
 		}
+
+		dbInstance.SetMaxOpenConns(cnf.MaxOpenConns)
+		dbInstance.SetMaxIdleConns(cnf.MaxIdleConns)
+		dbInstance.SetConnMaxLifetime(5 * time.Minute)
 	})
 
-	dbInstance.SetMaxOpenConns(cnf.MaxOpenConns)
-	dbInstance.SetMaxIdleConns(cnf.MaxIdleConns)
-	dbInstance.SetConnMaxLifetime(5 * time.Minute)
+	if dbInstance == nil || err != nil {
+		return nil, err
+	}
 
 	return dbInstance, nil
 }
