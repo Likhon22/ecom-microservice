@@ -5,8 +5,8 @@ CREATE TABLE orders (
     product_id VARCHAR(255) NOT NULL,
     category VARCHAR(100) NOT NULL,
     quantity INT NOT NULL,
-    total_amount NUMERIC(10,2),  -- NULL initially, calculated later
-    status VARCHAR(50) NOT NULL,  -- pending_validation, confirmed, failed, etc.
+    total_amount NUMERIC(10,2),  
+    status VARCHAR(50) NOT NULL,  
     payment_id VARCHAR(255),
     error_message TEXT,  
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
