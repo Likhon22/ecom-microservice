@@ -1,0 +1,108 @@
+syntax = "proto3";
+
+package cart_service;
+option go_package = "github.com/Likhon22/ecom_microservice/cart_service/proto/gen;cartpb";
+
+import "validate/validate.proto";
+import "google/api/annotations.proto";
+
+service CartService {
+  // Add item to cart
+  rpc AddToCart(AddToCartRequest) returns (StandardResponse) {
+    option (google.api.http) = {
+      post: "/cart/add"
+      body: "*"
+    };
+  }
+  
+  // Get user's cart
+  rpc GetCart(GetCartRequest) returns (StandardResponse) {
+    option (google.api.http) = {
+      get: "/cart"
+    };
+  }
+  
+  // Update item quantity in cart
+  rpc UpdateCartItem(UpdateCartItemRequest) returns (StandardResponse) {
+    option (google.api.http) = {
+      put: "/cart/update"
+      body: "*"
+    };
+  }
+  
+  // Remove item from cart
+  rpc RemoveFromCart(RemoveFromCartRequest) returns (StandardResponse) {
+    option (google.api.http) = {
+      delete: "/cart/remove"
+      body: "*"
+    };
+  }
+  
+  // Clear entire cart
+  rpc ClearCart(ClearCartRequest) returns (StandardResponse) {
+    option (google.api.http) = {
+      delete: "/cart/clear"
+      body: "*"
+    };
+  }
+}
+
+// ============================================
+// Request Messages
+// ============================================
+
+message AddToCartRequest {
+  // email not needed - comes from JWT token
+  string product_id = 1 [(validate.rules).string.min_len = 1];
+  string category = 2 [(validate.rules).string.min_len = 1];
+  int32 quantity = 3 [(validate.rules).int32.gt = 0];
+}
+
+message GetCartRequest {
+  // email comes from JWT token - no input needed
+}
+
+message UpdateCartItemRequest {
+  string product_id = 1 [(validate.rules).string.min_len = 1];
+  int32 quantity = 2 [(validate.rules).int32.gte = 0];  // 0 = remove item
+}
+
+message RemoveFromCartRequest {
+  string product_id = 1 [(validate.rules).string.min_len = 1];
+}
+
+message ClearCartRequest {
+  // email comes from JWT token - no input needed
+}
+
+// ============================================
+// Response Messages
+// ============================================
+
+message CartItem {
+  string product_id = 1;
+  string category = 2;
+  string product_name = 3;
+  double price = 4;
+  int32 quantity = 5;
+  string image_url = 6;
+  double subtotal = 7;
+}
+
+message CartResponse {
+  string email = 1;
+  repeated CartItem items = 2;
+  int32 total_items = 3;
+  double subtotal = 4;
+  int64 created_at = 5;
+  int64 updated_at = 6;
+}
+
+message StandardResponse {
+  bool success = 1;
+  string message = 2;
+  int32 status_code = 3;
+  oneof result {
+    CartResponse cart_data = 4;
+  }
+}

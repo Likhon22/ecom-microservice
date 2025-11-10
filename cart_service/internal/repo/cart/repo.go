@@ -2,15 +2,15 @@ package cartRepo
 
 import "github.com/redis/go-redis/v9"
 
-type cart struct {
+type repo struct {
 	db *redis.Client
 }
 
-type Cart interface{}
+type Repo interface{}
 
-func NewRepo(db *redis.Client) Cart {
+func NewRepo(db *redis.Client) Repo {
 
-	return &cart{
+	return &repo{
 		db: db,
 	}
 
