@@ -130,3 +130,10 @@ services:
       - name: grpc-gateway
         config:
           proto: /kong/protos/product.proto
+
+  - name: cart-service
+    url: grpc://host.docker.internal:5004
+    routes:
+      - name: create-cart
+        paths: [/cart/add]
+        methods: [POST]
