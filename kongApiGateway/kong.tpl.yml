@@ -137,3 +137,20 @@ services:
       - name: create-cart
         paths: [/cart/add]
         methods: [POST]
+        plugins:
+          - name: auth-token-validator
+            config:
+              jwt_secret: "${JWT_ACCESS_SECRET}"
+          - name: user-context-injector
+      - name: get-cart
+        paths: [/cart]
+        methods: [GET]
+        plugins:
+          - name: auth-token-validator
+            config:
+              jwt_secret: "${JWT_ACCESS_SECRET}"
+          - name: user-context-injector
+    plugins:
+      - name: grpc-gateway
+        config:
+          proto: /kong/protos/cart.proto
