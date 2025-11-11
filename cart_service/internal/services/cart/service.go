@@ -20,6 +20,7 @@ type service struct {
 
 type Service interface {
 	AddToCart(ctx context.Context, email string, req *cartpb.AddToCartRequest) (*cartpb.CartResponse, error)
+	GetCart(ctx context.Context, email string) (*cartpb.CartResponse, error)
 }
 
 func NewService(repo cartRepo.Repo, productClient client.Client) Service {
@@ -37,6 +38,7 @@ func (s *service) AddToCart(ctx context.Context, email string, req *cartpb.AddTo
 
 	}
 	existingCart, err := s.repo.GetCart(ctx, email)
+
 	if err != nil && err != redis.Nil {
 		return nil, err
 	}
@@ -74,4 +76,25 @@ func (s *service) AddToCart(ctx context.Context, email string, req *cartpb.AddTo
 	}
 
 	return utils.DomainCartToProto(savedCart), nil
+}
+
+func (s *service) GetCart(ctx context.Context, email string) (*cartpb.CartResponse, error) {
+
+	if email == "" {
+		return nil, errors.New("Unauthorized")
+
+	}
+	resp, err := s.repo.GetCart(ctx, email)
+	if err != nil {
+		return nil, err
+
+	}
+	return utils.DomainCartToProto(resp), nil
+
+}
+
+func (s *service) UpdateCart(ctx context.Context, email string) {
+
+
+	
 }

@@ -42,3 +42,27 @@ func (h *handler) AddToCart(ctx context.Context, req *cartpb.AddToCartRequest) (
 	}, nil
 
 }
+
+func (h *handler) GetCart(ctx context.Context, req *cartpb.GetCartRequest) (*cartpb.CartStandardResponse, error) {
+
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return nil, utils.MapError(errors.New("email not found in metadata"))
+
+	}
+	emails := md.Get("x-user-email")
+	cart, err := h.service.GetCart(ctx, emails[0])
+	if err != nil {
+		return nil, utils.MapError(err)
+
+	}
+	return &cartpb.CartStandardResponse{
+		Success:    true,
+		Message:    "fetched cart successfully",
+		StatusCode: 200,
+		Result: &cartpb.CartStandardResponse_CartData{
+			CartData: cart,
+		},
+	}, nil
+
+}

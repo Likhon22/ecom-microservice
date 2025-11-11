@@ -5,6 +5,7 @@ import (
 	client "cart_service/internal/clients/product"
 	"cart_service/internal/config"
 	"cart_service/internal/infra"
+	"cart_service/internal/interceptors"
 	cartRepo "cart_service/internal/repo/cart"
 	cartService "cart_service/internal/services/cart"
 	cartpb "cart_service/proto/gen"
@@ -24,7 +25,7 @@ type Application struct {
 
 func InitializeApp(ctx context.Context, cnf *config.Config) (*Application, error) {
 
-	grpcServer := grpc.NewServer()
+	grpcServer := grpc.NewServer(grpc.UnaryInterceptor(interceptors.ErrorInterCeptor()))
 
 	lis, err := net.Listen("tcp", cnf.Addr)
 

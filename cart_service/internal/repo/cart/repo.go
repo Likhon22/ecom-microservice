@@ -34,16 +34,13 @@ func (r *repo) AddToCart(ctx context.Context, email string, payload *domain.Cart
 		return nil, error
 
 	}
-	result, err := r.db.Set(ctx, key, data, 7*24*time.Hour).Result()
+	_, err := r.db.Set(ctx, key, data, 7*24*time.Hour).Result()
 	if err != nil {
 		return nil, err
 
 	}
-	var cart *domain.Cart
-	if err := json.Unmarshal([]byte(result), cart); err != nil {
-		return nil, err
-	}
-	return cart, nil
+
+	return payload, nil
 }
 
 func (r *repo) GetCart(ctx context.Context, email string) (*domain.Cart, error) {
@@ -59,10 +56,12 @@ func (r *repo) GetCart(ctx context.Context, email string) (*domain.Cart, error) 
 		return nil, err
 
 	}
-	var cart *domain.Cart
+
+	cart := &domain.Cart{}
 	if err := json.Unmarshal([]byte(val), cart); err != nil {
 		return nil, err
 	}
+
 	return cart, nil
 
 }
