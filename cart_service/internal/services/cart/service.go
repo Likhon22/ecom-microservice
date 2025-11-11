@@ -5,12 +5,12 @@ import (
 	"cart_service/internal/domain"
 	cartRepo "cart_service/internal/repo/cart"
 	cartpb "cart_service/proto/gen"
+	"cart_service/utils"
 	"context"
 	"errors"
 	"time"
 
 	"github.com/redis/go-redis/v9"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type service struct {
@@ -48,20 +48,11 @@ func (s *service) AddToCart(ctx context.Context, email string, req *cartpb.AddTo
 		}
 	}
 
-	itemsExists := false
-	for i, item := range existingCart.Items {
-		if item.ProductID == req.ProductId {
-			existingCart.Items[i].Quantity += req.Quantity
-			existingCart.Items[i].Subtotal = existingCart.Items[i].Price * float64(existingCart.Items[i].Quantity)
-			itemsExists = true
-			break
-
-		}
-
-	}
-	var product *cartpb.Product
-	if !itemsExists {
-		product, err = s.productClient.GetProductById(ctx, &cartpb.GetProductByIdRequest{
+	itemIndex := utils.FindCartIndex(existingCart.Items, req.ProductId)
+	if itemIndex >= 0 {
+		utils.UpdateItemQuantity(&existingCart.Items[itemIndex], req.Quantity)
+	} else {
+		product, err := s.productClient.GetProductById(ctx, &cartpb.GetProductByIdRequest{
 			Category:  req.Category,
 			ProductId: req.ProductId,
 		})
@@ -69,48 +60,18 @@ func (s *service) AddToCart(ctx context.Context, email string, req *cartpb.AddTo
 			return nil, err
 		}
 
-		newItem := domain.CartItem{
-			ProductID:   req.ProductId,
-			Category:    req.Category,
-			ProductName: product.Name,
-			Price:       product.Price,
-			Quantity:    req.Quantity,
-			ImageURL:    product.ImageUrls[0],
-			Subtotal:    product.Price * float64(req.Quantity),
-		}
+		newItem := utils.CreateCartItem(product, req.Quantity)
 		existingCart.Items = append(existingCart.Items, newItem)
-	}
-	existingCart.TotalItems = 0
-	existingCart.Subtotal = 0
-	for _, item := range existingCart.Items {
-		existingCart.TotalItems += item.Quantity
-		existingCart.Subtotal += item.Subtotal
 
 	}
+
+	utils.RecalculateSubTotal(existingCart)
 	existingCart.UpdatedAt = time.Now().UTC()
-	cart, err := s.repo.AddToCart(ctx, email, existingCart)
+	savedCart, err := s.repo.AddToCart(ctx, email, existingCart)
 
 	if err != nil {
 		return nil, err
 	}
-	pbItems := make([]*cartpb.CartItem, 0, len(cart.Items))
-	for _, item := range cart.Items {
-		pbItems = append(pbItems, &cartpb.CartItem{
-			ProductId:   item.ProductID,
-			Category:    item.Category,
-			ProductName: item.ProductName,
-			Price:       item.Price,
-			Quantity:    item.Quantity,
-			ImageUrl:    item.ImageURL,
-			Subtotal:    item.Subtotal,
-		})
-	}
-	return &cartpb.CartResponse{
-		Email:      email,
-		Items:      pbItems,
-		TotalItems: cart.TotalItems,
-		Subtotal:   cart.Subtotal,
-		CreatedAt:  timestamppb.New(cart.CreatedAt),
-		UpdatedAt:  timestamppb.New(cart.UpdatedAt),
-	}, nil
+
+	return utils.DomainCartToProto(savedCart), nil
 }
