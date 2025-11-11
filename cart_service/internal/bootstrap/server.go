@@ -2,12 +2,14 @@ package bootstrap
 
 import (
 	"cart_service/internal/api/handlers"
+	client "cart_service/internal/clients/product"
 	"cart_service/internal/config"
 	"cart_service/internal/infra"
 	cartRepo "cart_service/internal/repo/cart"
 	cartService "cart_service/internal/services/cart"
 	cartpb "cart_service/proto/gen"
 	"context"
+	"fmt"
 	"log"
 	"net"
 
@@ -33,14 +35,19 @@ func InitializeApp(ctx context.Context, cnf *config.Config) (*Application, error
 	rdb := infra.ConnectRedis("localhost:6379", 0)
 	log.Println("redis is connected")
 
+	productClient, closeProductClient, err := client.NewClient(ctx, cnf.User_Service_Addr)
+	if err != nil {
+		return nil, fmt.Errorf("dial user service: %w", err)
+	}
 	repo := cartRepo.NewRepo(rdb)
-	service := cartService.NewService(repo)
+	service := cartService.NewService(repo, productClient)
 	handler := handlers.NewHandler(service)
 	cartpb.RegisterCartServiceServer(grpcServer, handler)
 
 	go func() {
 		<-ctx.Done()
 		lis.Close()
+		closeProductClient()
 	}()
 	return &Application{
 		server:   grpcServer,

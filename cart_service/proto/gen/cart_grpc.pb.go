@@ -31,15 +31,15 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type CartServiceClient interface {
 	// Add item to cart
-	AddToCart(ctx context.Context, in *AddToCartRequest, opts ...grpc.CallOption) (*StandardResponse, error)
+	AddToCart(ctx context.Context, in *AddToCartRequest, opts ...grpc.CallOption) (*CartStandardResponse, error)
 	// Get user's cart
-	GetCart(ctx context.Context, in *GetCartRequest, opts ...grpc.CallOption) (*StandardResponse, error)
+	GetCart(ctx context.Context, in *GetCartRequest, opts ...grpc.CallOption) (*CartStandardResponse, error)
 	// Update item quantity in cart
-	UpdateCartItem(ctx context.Context, in *UpdateCartItemRequest, opts ...grpc.CallOption) (*StandardResponse, error)
+	UpdateCartItem(ctx context.Context, in *UpdateCartItemRequest, opts ...grpc.CallOption) (*CartStandardResponse, error)
 	// Remove item from cart
-	RemoveFromCart(ctx context.Context, in *RemoveFromCartRequest, opts ...grpc.CallOption) (*StandardResponse, error)
+	RemoveFromCart(ctx context.Context, in *RemoveFromCartRequest, opts ...grpc.CallOption) (*CartStandardResponse, error)
 	// Clear entire cart
-	ClearCart(ctx context.Context, in *ClearCartRequest, opts ...grpc.CallOption) (*StandardResponse, error)
+	ClearCart(ctx context.Context, in *ClearCartRequest, opts ...grpc.CallOption) (*CartStandardResponse, error)
 }
 
 type cartServiceClient struct {
@@ -50,9 +50,9 @@ func NewCartServiceClient(cc grpc.ClientConnInterface) CartServiceClient {
 	return &cartServiceClient{cc}
 }
 
-func (c *cartServiceClient) AddToCart(ctx context.Context, in *AddToCartRequest, opts ...grpc.CallOption) (*StandardResponse, error) {
+func (c *cartServiceClient) AddToCart(ctx context.Context, in *AddToCartRequest, opts ...grpc.CallOption) (*CartStandardResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(StandardResponse)
+	out := new(CartStandardResponse)
 	err := c.cc.Invoke(ctx, CartService_AddToCart_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -60,9 +60,9 @@ func (c *cartServiceClient) AddToCart(ctx context.Context, in *AddToCartRequest,
 	return out, nil
 }
 
-func (c *cartServiceClient) GetCart(ctx context.Context, in *GetCartRequest, opts ...grpc.CallOption) (*StandardResponse, error) {
+func (c *cartServiceClient) GetCart(ctx context.Context, in *GetCartRequest, opts ...grpc.CallOption) (*CartStandardResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(StandardResponse)
+	out := new(CartStandardResponse)
 	err := c.cc.Invoke(ctx, CartService_GetCart_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -70,9 +70,9 @@ func (c *cartServiceClient) GetCart(ctx context.Context, in *GetCartRequest, opt
 	return out, nil
 }
 
-func (c *cartServiceClient) UpdateCartItem(ctx context.Context, in *UpdateCartItemRequest, opts ...grpc.CallOption) (*StandardResponse, error) {
+func (c *cartServiceClient) UpdateCartItem(ctx context.Context, in *UpdateCartItemRequest, opts ...grpc.CallOption) (*CartStandardResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(StandardResponse)
+	out := new(CartStandardResponse)
 	err := c.cc.Invoke(ctx, CartService_UpdateCartItem_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -80,9 +80,9 @@ func (c *cartServiceClient) UpdateCartItem(ctx context.Context, in *UpdateCartIt
 	return out, nil
 }
 
-func (c *cartServiceClient) RemoveFromCart(ctx context.Context, in *RemoveFromCartRequest, opts ...grpc.CallOption) (*StandardResponse, error) {
+func (c *cartServiceClient) RemoveFromCart(ctx context.Context, in *RemoveFromCartRequest, opts ...grpc.CallOption) (*CartStandardResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(StandardResponse)
+	out := new(CartStandardResponse)
 	err := c.cc.Invoke(ctx, CartService_RemoveFromCart_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -90,9 +90,9 @@ func (c *cartServiceClient) RemoveFromCart(ctx context.Context, in *RemoveFromCa
 	return out, nil
 }
 
-func (c *cartServiceClient) ClearCart(ctx context.Context, in *ClearCartRequest, opts ...grpc.CallOption) (*StandardResponse, error) {
+func (c *cartServiceClient) ClearCart(ctx context.Context, in *ClearCartRequest, opts ...grpc.CallOption) (*CartStandardResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(StandardResponse)
+	out := new(CartStandardResponse)
 	err := c.cc.Invoke(ctx, CartService_ClearCart_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -105,15 +105,15 @@ func (c *cartServiceClient) ClearCart(ctx context.Context, in *ClearCartRequest,
 // for forward compatibility.
 type CartServiceServer interface {
 	// Add item to cart
-	AddToCart(context.Context, *AddToCartRequest) (*StandardResponse, error)
+	AddToCart(context.Context, *AddToCartRequest) (*CartStandardResponse, error)
 	// Get user's cart
-	GetCart(context.Context, *GetCartRequest) (*StandardResponse, error)
+	GetCart(context.Context, *GetCartRequest) (*CartStandardResponse, error)
 	// Update item quantity in cart
-	UpdateCartItem(context.Context, *UpdateCartItemRequest) (*StandardResponse, error)
+	UpdateCartItem(context.Context, *UpdateCartItemRequest) (*CartStandardResponse, error)
 	// Remove item from cart
-	RemoveFromCart(context.Context, *RemoveFromCartRequest) (*StandardResponse, error)
+	RemoveFromCart(context.Context, *RemoveFromCartRequest) (*CartStandardResponse, error)
 	// Clear entire cart
-	ClearCart(context.Context, *ClearCartRequest) (*StandardResponse, error)
+	ClearCart(context.Context, *ClearCartRequest) (*CartStandardResponse, error)
 	mustEmbedUnimplementedCartServiceServer()
 }
 
@@ -124,19 +124,19 @@ type CartServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedCartServiceServer struct{}
 
-func (UnimplementedCartServiceServer) AddToCart(context.Context, *AddToCartRequest) (*StandardResponse, error) {
+func (UnimplementedCartServiceServer) AddToCart(context.Context, *AddToCartRequest) (*CartStandardResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddToCart not implemented")
 }
-func (UnimplementedCartServiceServer) GetCart(context.Context, *GetCartRequest) (*StandardResponse, error) {
+func (UnimplementedCartServiceServer) GetCart(context.Context, *GetCartRequest) (*CartStandardResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetCart not implemented")
 }
-func (UnimplementedCartServiceServer) UpdateCartItem(context.Context, *UpdateCartItemRequest) (*StandardResponse, error) {
+func (UnimplementedCartServiceServer) UpdateCartItem(context.Context, *UpdateCartItemRequest) (*CartStandardResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateCartItem not implemented")
 }
-func (UnimplementedCartServiceServer) RemoveFromCart(context.Context, *RemoveFromCartRequest) (*StandardResponse, error) {
+func (UnimplementedCartServiceServer) RemoveFromCart(context.Context, *RemoveFromCartRequest) (*CartStandardResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RemoveFromCart not implemented")
 }
-func (UnimplementedCartServiceServer) ClearCart(context.Context, *ClearCartRequest) (*StandardResponse, error) {
+func (UnimplementedCartServiceServer) ClearCart(context.Context, *ClearCartRequest) (*CartStandardResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ClearCart not implemented")
 }
 func (UnimplementedCartServiceServer) mustEmbedUnimplementedCartServiceServer() {}

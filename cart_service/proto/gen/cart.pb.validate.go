@@ -780,9 +780,63 @@ func (m *CartResponse) validate(all bool) error {
 
 	// no validation rules for Subtotal
 
-	// no validation rules for CreatedAt
+	if all {
+		switch v := interface{}(m.GetCreatedAt()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, CartResponseValidationError{
+					field:  "CreatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, CartResponseValidationError{
+					field:  "CreatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return CartResponseValidationError{
+				field:  "CreatedAt",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
 
-	// no validation rules for UpdatedAt
+	if all {
+		switch v := interface{}(m.GetUpdatedAt()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, CartResponseValidationError{
+					field:  "UpdatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, CartResponseValidationError{
+					field:  "UpdatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetUpdatedAt()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return CartResponseValidationError{
+				field:  "UpdatedAt",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
 
 	if len(errors) > 0 {
 		return CartResponseMultiError(errors)
@@ -861,22 +915,22 @@ var _ interface {
 	ErrorName() string
 } = CartResponseValidationError{}
 
-// Validate checks the field values on StandardResponse with the rules defined
-// in the proto definition for this message. If any rules are violated, the
-// first error encountered is returned, or nil if there are no violations.
-func (m *StandardResponse) Validate() error {
+// Validate checks the field values on CartStandardResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *CartStandardResponse) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on StandardResponse with the rules
+// ValidateAll checks the field values on CartStandardResponse with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, the result is a list of violation errors wrapped in
-// StandardResponseMultiError, or nil if none found.
-func (m *StandardResponse) ValidateAll() error {
+// CartStandardResponseMultiError, or nil if none found.
+func (m *CartStandardResponse) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *StandardResponse) validate(all bool) error {
+func (m *CartStandardResponse) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -890,9 +944,9 @@ func (m *StandardResponse) validate(all bool) error {
 	// no validation rules for StatusCode
 
 	switch v := m.Result.(type) {
-	case *StandardResponse_CartData:
+	case *CartStandardResponse_CartData:
 		if v == nil {
-			err := StandardResponseValidationError{
+			err := CartStandardResponseValidationError{
 				field:  "Result",
 				reason: "oneof value cannot be a typed-nil",
 			}
@@ -906,7 +960,7 @@ func (m *StandardResponse) validate(all bool) error {
 			switch v := interface{}(m.GetCartData()).(type) {
 			case interface{ ValidateAll() error }:
 				if err := v.ValidateAll(); err != nil {
-					errors = append(errors, StandardResponseValidationError{
+					errors = append(errors, CartStandardResponseValidationError{
 						field:  "CartData",
 						reason: "embedded message failed validation",
 						cause:  err,
@@ -914,7 +968,7 @@ func (m *StandardResponse) validate(all bool) error {
 				}
 			case interface{ Validate() error }:
 				if err := v.Validate(); err != nil {
-					errors = append(errors, StandardResponseValidationError{
+					errors = append(errors, CartStandardResponseValidationError{
 						field:  "CartData",
 						reason: "embedded message failed validation",
 						cause:  err,
@@ -923,7 +977,7 @@ func (m *StandardResponse) validate(all bool) error {
 			}
 		} else if v, ok := interface{}(m.GetCartData()).(interface{ Validate() error }); ok {
 			if err := v.Validate(); err != nil {
-				return StandardResponseValidationError{
+				return CartStandardResponseValidationError{
 					field:  "CartData",
 					reason: "embedded message failed validation",
 					cause:  err,
@@ -936,19 +990,19 @@ func (m *StandardResponse) validate(all bool) error {
 	}
 
 	if len(errors) > 0 {
-		return StandardResponseMultiError(errors)
+		return CartStandardResponseMultiError(errors)
 	}
 
 	return nil
 }
 
-// StandardResponseMultiError is an error wrapping multiple validation errors
-// returned by StandardResponse.ValidateAll() if the designated constraints
-// aren't met.
-type StandardResponseMultiError []error
+// CartStandardResponseMultiError is an error wrapping multiple validation
+// errors returned by CartStandardResponse.ValidateAll() if the designated
+// constraints aren't met.
+type CartStandardResponseMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m StandardResponseMultiError) Error() string {
+func (m CartStandardResponseMultiError) Error() string {
 	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -957,11 +1011,11 @@ func (m StandardResponseMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m StandardResponseMultiError) AllErrors() []error { return m }
+func (m CartStandardResponseMultiError) AllErrors() []error { return m }
 
-// StandardResponseValidationError is the validation error returned by
-// StandardResponse.Validate if the designated constraints aren't met.
-type StandardResponseValidationError struct {
+// CartStandardResponseValidationError is the validation error returned by
+// CartStandardResponse.Validate if the designated constraints aren't met.
+type CartStandardResponseValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -969,22 +1023,24 @@ type StandardResponseValidationError struct {
 }
 
 // Field function returns field value.
-func (e StandardResponseValidationError) Field() string { return e.field }
+func (e CartStandardResponseValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e StandardResponseValidationError) Reason() string { return e.reason }
+func (e CartStandardResponseValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e StandardResponseValidationError) Cause() error { return e.cause }
+func (e CartStandardResponseValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e StandardResponseValidationError) Key() bool { return e.key }
+func (e CartStandardResponseValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e StandardResponseValidationError) ErrorName() string { return "StandardResponseValidationError" }
+func (e CartStandardResponseValidationError) ErrorName() string {
+	return "CartStandardResponseValidationError"
+}
 
 // Error satisfies the builtin error interface
-func (e StandardResponseValidationError) Error() string {
+func (e CartStandardResponseValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -996,14 +1052,14 @@ func (e StandardResponseValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sStandardResponse.%s: %s%s",
+		"invalid %sCartStandardResponse.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = StandardResponseValidationError{}
+var _ error = CartStandardResponseValidationError{}
 
 var _ interface {
 	Field() string
@@ -1011,4 +1067,4 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = StandardResponseValidationError{}
+} = CartStandardResponseValidationError{}

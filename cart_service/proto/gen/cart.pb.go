@@ -11,6 +11,7 @@ import (
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -24,11 +25,10 @@ const (
 )
 
 type AddToCartRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// email not needed - comes from JWT token
-	ProductId     string `protobuf:"bytes,1,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty"`
-	Category      string `protobuf:"bytes,2,opt,name=category,proto3" json:"category,omitempty"`
-	Quantity      int32  `protobuf:"varint,3,opt,name=quantity,proto3" json:"quantity,omitempty"`
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ProductId     string                 `protobuf:"bytes,1,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty"`
+	Category      string                 `protobuf:"bytes,2,opt,name=category,proto3" json:"category,omitempty"`
+	Quantity      int32                  `protobuf:"varint,3,opt,name=quantity,proto3" json:"quantity,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -123,7 +123,7 @@ func (*GetCartRequest) Descriptor() ([]byte, []int) {
 type UpdateCartItemRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	ProductId     string                 `protobuf:"bytes,1,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty"`
-	Quantity      int32                  `protobuf:"varint,2,opt,name=quantity,proto3" json:"quantity,omitempty"` // 0 = remove item
+	Quantity      int32                  `protobuf:"varint,2,opt,name=quantity,proto3" json:"quantity,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -350,8 +350,8 @@ type CartResponse struct {
 	Items         []*CartItem            `protobuf:"bytes,2,rep,name=items,proto3" json:"items,omitempty"`
 	TotalItems    int32                  `protobuf:"varint,3,opt,name=total_items,json=totalItems,proto3" json:"total_items,omitempty"`
 	Subtotal      float64                `protobuf:"fixed64,4,opt,name=subtotal,proto3" json:"subtotal,omitempty"`
-	CreatedAt     int64                  `protobuf:"varint,5,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	UpdatedAt     int64                  `protobuf:"varint,6,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -414,47 +414,47 @@ func (x *CartResponse) GetSubtotal() float64 {
 	return 0
 }
 
-func (x *CartResponse) GetCreatedAt() int64 {
+func (x *CartResponse) GetCreatedAt() *timestamppb.Timestamp {
 	if x != nil {
 		return x.CreatedAt
 	}
-	return 0
+	return nil
 }
 
-func (x *CartResponse) GetUpdatedAt() int64 {
+func (x *CartResponse) GetUpdatedAt() *timestamppb.Timestamp {
 	if x != nil {
 		return x.UpdatedAt
 	}
-	return 0
+	return nil
 }
 
-type StandardResponse struct {
+type CartStandardResponse struct {
 	state      protoimpl.MessageState `protogen:"open.v1"`
 	Success    bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
 	Message    string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
 	StatusCode int32                  `protobuf:"varint,3,opt,name=status_code,json=statusCode,proto3" json:"status_code,omitempty"`
 	// Types that are valid to be assigned to Result:
 	//
-	//	*StandardResponse_CartData
-	Result        isStandardResponse_Result `protobuf_oneof:"result"`
+	//	*CartStandardResponse_CartData
+	Result        isCartStandardResponse_Result `protobuf_oneof:"result"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *StandardResponse) Reset() {
-	*x = StandardResponse{}
+func (x *CartStandardResponse) Reset() {
+	*x = CartStandardResponse{}
 	mi := &file_cart_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *StandardResponse) String() string {
+func (x *CartStandardResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*StandardResponse) ProtoMessage() {}
+func (*CartStandardResponse) ProtoMessage() {}
 
-func (x *StandardResponse) ProtoReflect() protoreflect.Message {
+func (x *CartStandardResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_cart_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -466,64 +466,64 @@ func (x *StandardResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use StandardResponse.ProtoReflect.Descriptor instead.
-func (*StandardResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use CartStandardResponse.ProtoReflect.Descriptor instead.
+func (*CartStandardResponse) Descriptor() ([]byte, []int) {
 	return file_cart_proto_rawDescGZIP(), []int{7}
 }
 
-func (x *StandardResponse) GetSuccess() bool {
+func (x *CartStandardResponse) GetSuccess() bool {
 	if x != nil {
 		return x.Success
 	}
 	return false
 }
 
-func (x *StandardResponse) GetMessage() string {
+func (x *CartStandardResponse) GetMessage() string {
 	if x != nil {
 		return x.Message
 	}
 	return ""
 }
 
-func (x *StandardResponse) GetStatusCode() int32 {
+func (x *CartStandardResponse) GetStatusCode() int32 {
 	if x != nil {
 		return x.StatusCode
 	}
 	return 0
 }
 
-func (x *StandardResponse) GetResult() isStandardResponse_Result {
+func (x *CartStandardResponse) GetResult() isCartStandardResponse_Result {
 	if x != nil {
 		return x.Result
 	}
 	return nil
 }
 
-func (x *StandardResponse) GetCartData() *CartResponse {
+func (x *CartStandardResponse) GetCartData() *CartResponse {
 	if x != nil {
-		if x, ok := x.Result.(*StandardResponse_CartData); ok {
+		if x, ok := x.Result.(*CartStandardResponse_CartData); ok {
 			return x.CartData
 		}
 	}
 	return nil
 }
 
-type isStandardResponse_Result interface {
-	isStandardResponse_Result()
+type isCartStandardResponse_Result interface {
+	isCartStandardResponse_Result()
 }
 
-type StandardResponse_CartData struct {
+type CartStandardResponse_CartData struct {
 	CartData *CartResponse `protobuf:"bytes,4,opt,name=cart_data,json=cartData,proto3,oneof"`
 }
 
-func (*StandardResponse_CartData) isStandardResponse_Result() {}
+func (*CartStandardResponse_CartData) isCartStandardResponse_Result() {}
 
 var File_cart_proto protoreflect.FileDescriptor
 
 const file_cart_proto_rawDesc = "" +
 	"\n" +
 	"\n" +
-	"cart.proto\x12\fcart_service\x1a\x17validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\"\x84\x01\n" +
+	"cart.proto\x12\fcart_service\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\"\x84\x01\n" +
 	"\x10AddToCartRequest\x12&\n" +
 	"\n" +
 	"product_id\x18\x01 \x01(\tB\a\xfaB\x04r\x02\x10\x01R\tproductId\x12#\n" +
@@ -546,30 +546,30 @@ const file_cart_proto_rawDesc = "" +
 	"\x05price\x18\x04 \x01(\x01R\x05price\x12\x1a\n" +
 	"\bquantity\x18\x05 \x01(\x05R\bquantity\x12\x1b\n" +
 	"\timage_url\x18\x06 \x01(\tR\bimageUrl\x12\x1a\n" +
-	"\bsubtotal\x18\a \x01(\x01R\bsubtotal\"\xcd\x01\n" +
+	"\bsubtotal\x18\a \x01(\x01R\bsubtotal\"\x85\x02\n" +
 	"\fCartResponse\x12\x14\n" +
 	"\x05email\x18\x01 \x01(\tR\x05email\x12,\n" +
 	"\x05items\x18\x02 \x03(\v2\x16.cart_service.CartItemR\x05items\x12\x1f\n" +
 	"\vtotal_items\x18\x03 \x01(\x05R\n" +
 	"totalItems\x12\x1a\n" +
-	"\bsubtotal\x18\x04 \x01(\x01R\bsubtotal\x12\x1d\n" +
+	"\bsubtotal\x18\x04 \x01(\x01R\bsubtotal\x129\n" +
 	"\n" +
-	"created_at\x18\x05 \x01(\x03R\tcreatedAt\x12\x1d\n" +
+	"created_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
 	"\n" +
-	"updated_at\x18\x06 \x01(\x03R\tupdatedAt\"\xac\x01\n" +
-	"\x10StandardResponse\x12\x18\n" +
+	"updated_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"\xb0\x01\n" +
+	"\x14CartStandardResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
 	"\amessage\x18\x02 \x01(\tR\amessage\x12\x1f\n" +
 	"\vstatus_code\x18\x03 \x01(\x05R\n" +
 	"statusCode\x129\n" +
 	"\tcart_data\x18\x04 \x01(\v2\x1a.cart_service.CartResponseH\x00R\bcartDataB\b\n" +
-	"\x06result2\x8d\x04\n" +
-	"\vCartService\x12a\n" +
-	"\tAddToCart\x12\x1e.cart_service.AddToCartRequest\x1a\x1e.cart_service.StandardResponse\"\x14\x82\xd3\xe4\x93\x02\x0e:\x01*\"\t/cart/add\x12V\n" +
-	"\aGetCart\x12\x1c.cart_service.GetCartRequest\x1a\x1e.cart_service.StandardResponse\"\r\x82\xd3\xe4\x93\x02\a\x12\x05/cart\x12n\n" +
-	"\x0eUpdateCartItem\x12#.cart_service.UpdateCartItemRequest\x1a\x1e.cart_service.StandardResponse\"\x17\x82\xd3\xe4\x93\x02\x11:\x01*\x1a\f/cart/update\x12n\n" +
-	"\x0eRemoveFromCart\x12#.cart_service.RemoveFromCartRequest\x1a\x1e.cart_service.StandardResponse\"\x17\x82\xd3\xe4\x93\x02\x11:\x01**\f/cart/remove\x12c\n" +
-	"\tClearCart\x12\x1e.cart_service.ClearCartRequest\x1a\x1e.cart_service.StandardResponse\"\x16\x82\xd3\xe4\x93\x02\x10:\x01**\v/cart/clearB\xae\x01\n" +
+	"\x06result2\xa1\x04\n" +
+	"\vCartService\x12e\n" +
+	"\tAddToCart\x12\x1e.cart_service.AddToCartRequest\x1a\".cart_service.CartStandardResponse\"\x14\x82\xd3\xe4\x93\x02\x0e:\x01*\"\t/cart/add\x12Z\n" +
+	"\aGetCart\x12\x1c.cart_service.GetCartRequest\x1a\".cart_service.CartStandardResponse\"\r\x82\xd3\xe4\x93\x02\a\x12\x05/cart\x12r\n" +
+	"\x0eUpdateCartItem\x12#.cart_service.UpdateCartItemRequest\x1a\".cart_service.CartStandardResponse\"\x17\x82\xd3\xe4\x93\x02\x11:\x01*\x1a\f/cart/update\x12r\n" +
+	"\x0eRemoveFromCart\x12#.cart_service.RemoveFromCartRequest\x1a\".cart_service.CartStandardResponse\"\x17\x82\xd3\xe4\x93\x02\x11:\x01**\f/cart/remove\x12g\n" +
+	"\tClearCart\x12\x1e.cart_service.ClearCartRequest\x1a\".cart_service.CartStandardResponse\"\x16\x82\xd3\xe4\x93\x02\x10:\x01**\v/cart/clearB\xae\x01\n" +
 	"\x10com.cart_serviceB\tCartProtoP\x01ZCgithub.com/Likhon22/ecom_microservice/cart_service/proto/gen;cartpb\xa2\x02\x03CXX\xaa\x02\vCartService\xca\x02\vCartService\xe2\x02\x17CartService\\GPBMetadata\xea\x02\vCartServiceb\x06proto3"
 
 var (
@@ -593,26 +593,29 @@ var file_cart_proto_goTypes = []any{
 	(*ClearCartRequest)(nil),      // 4: cart_service.ClearCartRequest
 	(*CartItem)(nil),              // 5: cart_service.CartItem
 	(*CartResponse)(nil),          // 6: cart_service.CartResponse
-	(*StandardResponse)(nil),      // 7: cart_service.StandardResponse
+	(*CartStandardResponse)(nil),  // 7: cart_service.CartStandardResponse
+	(*timestamppb.Timestamp)(nil), // 8: google.protobuf.Timestamp
 }
 var file_cart_proto_depIdxs = []int32{
 	5, // 0: cart_service.CartResponse.items:type_name -> cart_service.CartItem
-	6, // 1: cart_service.StandardResponse.cart_data:type_name -> cart_service.CartResponse
-	0, // 2: cart_service.CartService.AddToCart:input_type -> cart_service.AddToCartRequest
-	1, // 3: cart_service.CartService.GetCart:input_type -> cart_service.GetCartRequest
-	2, // 4: cart_service.CartService.UpdateCartItem:input_type -> cart_service.UpdateCartItemRequest
-	3, // 5: cart_service.CartService.RemoveFromCart:input_type -> cart_service.RemoveFromCartRequest
-	4, // 6: cart_service.CartService.ClearCart:input_type -> cart_service.ClearCartRequest
-	7, // 7: cart_service.CartService.AddToCart:output_type -> cart_service.StandardResponse
-	7, // 8: cart_service.CartService.GetCart:output_type -> cart_service.StandardResponse
-	7, // 9: cart_service.CartService.UpdateCartItem:output_type -> cart_service.StandardResponse
-	7, // 10: cart_service.CartService.RemoveFromCart:output_type -> cart_service.StandardResponse
-	7, // 11: cart_service.CartService.ClearCart:output_type -> cart_service.StandardResponse
-	7, // [7:12] is the sub-list for method output_type
-	2, // [2:7] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	2, // [2:2] is the sub-list for extension extendee
-	0, // [0:2] is the sub-list for field type_name
+	8, // 1: cart_service.CartResponse.created_at:type_name -> google.protobuf.Timestamp
+	8, // 2: cart_service.CartResponse.updated_at:type_name -> google.protobuf.Timestamp
+	6, // 3: cart_service.CartStandardResponse.cart_data:type_name -> cart_service.CartResponse
+	0, // 4: cart_service.CartService.AddToCart:input_type -> cart_service.AddToCartRequest
+	1, // 5: cart_service.CartService.GetCart:input_type -> cart_service.GetCartRequest
+	2, // 6: cart_service.CartService.UpdateCartItem:input_type -> cart_service.UpdateCartItemRequest
+	3, // 7: cart_service.CartService.RemoveFromCart:input_type -> cart_service.RemoveFromCartRequest
+	4, // 8: cart_service.CartService.ClearCart:input_type -> cart_service.ClearCartRequest
+	7, // 9: cart_service.CartService.AddToCart:output_type -> cart_service.CartStandardResponse
+	7, // 10: cart_service.CartService.GetCart:output_type -> cart_service.CartStandardResponse
+	7, // 11: cart_service.CartService.UpdateCartItem:output_type -> cart_service.CartStandardResponse
+	7, // 12: cart_service.CartService.RemoveFromCart:output_type -> cart_service.CartStandardResponse
+	7, // 13: cart_service.CartService.ClearCart:output_type -> cart_service.CartStandardResponse
+	9, // [9:14] is the sub-list for method output_type
+	4, // [4:9] is the sub-list for method input_type
+	4, // [4:4] is the sub-list for extension type_name
+	4, // [4:4] is the sub-list for extension extendee
+	0, // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_cart_proto_init() }
@@ -621,7 +624,7 @@ func file_cart_proto_init() {
 		return
 	}
 	file_cart_proto_msgTypes[7].OneofWrappers = []any{
-		(*StandardResponse_CartData)(nil),
+		(*CartStandardResponse_CartData)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{

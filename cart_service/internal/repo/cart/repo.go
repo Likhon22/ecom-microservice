@@ -1,17 +1,68 @@
 package cartRepo
 
-import "github.com/redis/go-redis/v9"
+import (
+	"cart_service/internal/domain"
+	"cart_service/utils"
+	"context"
+	"encoding/json"
+	"time"
+
+	"github.com/redis/go-redis/v9"
+)
 
 type repo struct {
 	db *redis.Client
 }
 
-type Repo interface{}
+type Repo interface {
+	AddToCart(ctx context.Context, email string, payload *domain.Cart) (*domain.Cart, error)
+	GetCart(ctx context.Context, email string) (*domain.Cart, error)
+}
 
 func NewRepo(db *redis.Client) Repo {
 
 	return &repo{
 		db: db,
 	}
+
+}
+
+func (r *repo) AddToCart(ctx context.Context, email string, payload *domain.Cart) (*domain.Cart, error) {
+	key := utils.CreateKey(email)
+	data, error := json.Marshal(payload)
+	if error != nil {
+		return nil, error
+
+	}
+	result, err := r.db.Set(ctx, key, data, 7*24*time.Hour).Result()
+	if err != nil {
+		return nil, err
+
+	}
+	var cart *domain.Cart
+	if err := json.Unmarshal([]byte(result), cart); err != nil {
+		return nil, err
+	}
+	return cart, nil
+}
+
+func (r *repo) GetCart(ctx context.Context, email string) (*domain.Cart, error) {
+	key := utils.CreateKey(email)
+	val, err := r.db.Get(ctx, key).Result()
+	if err == redis.Nil {
+		return &domain.Cart{
+			Email: email,
+			Items: []domain.CartItem{},
+		}, nil
+	}
+	if err != nil {
+		return nil, err
+
+	}
+	var cart *domain.Cart
+	if err := json.Unmarshal([]byte(val), cart); err != nil {
+		return nil, err
+	}
+	return cart, nil
 
 }
