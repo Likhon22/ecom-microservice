@@ -150,6 +150,14 @@ services:
             config:
               jwt_secret: "very very secret access token"
           - name: user-context-injector
+      - name: update-cart
+        paths: [/cart/update]
+        methods: [PUT]
+        plugins:
+          - name: auth-token-validator
+            config:
+              jwt_secret: "very very secret access token"
+          - name: user-context-injector
     plugins:
       - name: grpc-gateway
         config:
