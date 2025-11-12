@@ -87,3 +87,21 @@ func (h *handler) UpdateCartItem(ctx context.Context, req *cartpb.UpdateCartItem
 		},
 	}, nil
 }
+
+func (h *handler) RemoveFromCart(ctx context.Context, req *cartpb.RemoveFromCartRequest) (*cartpb.CartStandardResponse, error) {
+
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return nil, utils.MapError(errors.New("missing authentication metadata"))
+	}
+	emails := md.Get("x-user-email")
+	resp, err := h.service.Delete(ctx, emails[0], req)
+	if err != nil {
+		return nil, utils.MapError(err)
+	}
+	return &cartpb.CartStandardResponse{
+		Success:    true,
+		Message:    resp,
+		StatusCode: 200,
+	}, nil
+}

@@ -17,6 +17,7 @@ type repo struct {
 type Repo interface {
 	AddToCart(ctx context.Context, email string, payload *domain.Cart) (*domain.Cart, error)
 	GetCart(ctx context.Context, email string) (*domain.Cart, error)
+	DeleteCart(ctx context.Context, email string) error
 }
 
 func NewRepo(db *redis.Client) Repo {
@@ -63,5 +64,16 @@ func (r *repo) GetCart(ctx context.Context, email string) (*domain.Cart, error) 
 	}
 
 	return cart, nil
+
+}
+
+func (r *repo) DeleteCart(ctx context.Context, email string) error {
+
+	key := utils.CreateKey(email)
+	_, err := r.db.Del(ctx, key).Result()
+	if err != nil {
+		return err
+	}
+	return nil
 
 }

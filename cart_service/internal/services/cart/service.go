@@ -8,6 +8,7 @@ import (
 	"cart_service/utils"
 	"context"
 	"errors"
+	"log"
 	"time"
 
 	"github.com/redis/go-redis/v9"
@@ -22,6 +23,7 @@ type Service interface {
 	AddToCart(ctx context.Context, email string, req *cartpb.AddToCartRequest) (*cartpb.CartResponse, error)
 	GetCart(ctx context.Context, email string) (*cartpb.CartResponse, error)
 	UpdateCart(ctx context.Context, email string, req *cartpb.UpdateCartItemRequest) (*cartpb.CartResponse, error)
+	Delete(ctx context.Context, email string, req *cartpb.RemoveFromCartRequest) (string, error)
 }
 
 func NewService(repo cartRepo.Repo, productClient client.Client) Service {
@@ -121,4 +123,38 @@ func (s *service) UpdateCart(ctx context.Context, email string, req *cartpb.Upda
 		return nil, err
 	}
 	return utils.DomainCartToProto(savedCart), nil
+}
+
+func (s *service) Delete(ctx context.Context, email string, req *cartpb.RemoveFromCartRequest) (string, error) {
+	if email == "" {
+		return "", errors.New("Unauthorized")
+
+	}
+	cart, err := s.repo.GetCart(ctx, email)
+	if err != nil {
+		return "", err
+
+	}
+	itemIndex := utils.FindCartIndex(cart.Items, req.ProductId)
+	if itemIndex < 0 {
+		return "", errors.New("there is no item found")
+	}
+	if len(cart.Items) <= 1 {
+		log.Println("entire cart boom")
+		err := s.repo.DeleteCart(ctx, email)
+		if err != nil {
+			return "", err
+
+		}
+		return "deleted successfully", nil
+
+	}
+	cart.Items = append(cart.Items[:itemIndex], cart.Items[itemIndex+1:]...)
+	_, err = s.repo.AddToCart(ctx, email, cart)
+
+	if err != nil {
+		return "", err
+
+	}
+	return "deleted successfully", nil
 }
