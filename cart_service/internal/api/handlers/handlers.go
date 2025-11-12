@@ -66,3 +66,24 @@ func (h *handler) GetCart(ctx context.Context, req *cartpb.GetCartRequest) (*car
 	}, nil
 
 }
+
+func (h *handler) UpdateCartItem(ctx context.Context, req *cartpb.UpdateCartItemRequest) (*cartpb.CartStandardResponse, error) {
+
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return nil, utils.MapError(errors.New("missing authentication metadata"))
+	}
+	emails := md.Get("x-user-email")
+	resp, err := h.service.UpdateCart(ctx, emails[0], req)
+	if err != nil {
+		return nil, utils.MapError(err)
+	}
+	return &cartpb.CartStandardResponse{
+		Success:    true,
+		Message:    "cart updated successfully",
+		StatusCode: 200,
+		Result: &cartpb.CartStandardResponse_CartData{
+			CartData: resp,
+		},
+	}, nil
+}

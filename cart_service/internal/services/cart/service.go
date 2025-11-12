@@ -21,6 +21,7 @@ type service struct {
 type Service interface {
 	AddToCart(ctx context.Context, email string, req *cartpb.AddToCartRequest) (*cartpb.CartResponse, error)
 	GetCart(ctx context.Context, email string) (*cartpb.CartResponse, error)
+	UpdateCart(ctx context.Context, email string, req *cartpb.UpdateCartItemRequest) (*cartpb.CartResponse, error)
 }
 
 func NewService(repo cartRepo.Repo, productClient client.Client) Service {
@@ -93,8 +94,31 @@ func (s *service) GetCart(ctx context.Context, email string) (*cartpb.CartRespon
 
 }
 
-func (s *service) UpdateCart(ctx context.Context, email string) {
+func (s *service) UpdateCart(ctx context.Context, email string, req *cartpb.UpdateCartItemRequest) (*cartpb.CartResponse, error) {
 
+	if email == "" {
+		return nil, errors.New("Unauthorized")
+	}
+	cart, err := s.repo.GetCart(ctx, email)
+	if err != nil {
+		return nil, err
+	}
+	itemIndex := utils.FindCartIndex(cart.Items, req.ProductId)
+	if itemIndex < 0 {
+		return nil, errors.New("product not found in cart")
+	}
+	if req.Quantity == 0 {
+		cart.Items = append(cart.Items[:itemIndex], cart.Items[itemIndex+1:]...)
 
-	
+	} else {
+		cart.Items[itemIndex].Quantity = req.Quantity
+		cart.Items[itemIndex].Subtotal = cart.Items[itemIndex].Price * float64(req.Quantity)
+	}
+	utils.RecalculateSubTotal(cart)
+	cart.UpdatedAt = time.Now().UTC()
+	savedCart, err := s.repo.AddToCart(ctx, email, cart)
+	if err != nil {
+		return nil, err
+	}
+	return utils.DomainCartToProto(savedCart), nil
 }
