@@ -158,6 +158,14 @@ services:
             config:
               jwt_secret: "${JWT_ACCESS_SECRET}"
           - name: user-context-injector
+      - name: delete-cart
+        paths: [/cart/remove]
+        methods: [DELETE]
+        plugins:
+          - name: auth-token-validator
+            config:
+              jwt_secret: "${JWT_ACCESS_SECRET}"
+          - name: user-context-injector
     plugins:
       - name: grpc-gateway
         config:
