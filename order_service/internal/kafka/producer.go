@@ -15,10 +15,9 @@ type Producer interface {
 	Publish(ctx context.Context, key, value []byte) error
 }
 
-func NewProducer(writer *kafka.Writer) Producer {
-	return &producer{
-		writer: writer,
-	}
+func NewProducer(writer *kafka.Writer) (Producer, func() error) {
+	p := &producer{writer: writer}
+	return p, p.writer.Close
 }
 
 func (p *producer) Publish(ctx context.Context, key, value []byte) error {
