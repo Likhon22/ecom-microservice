@@ -5,8 +5,13 @@ import (
 	"fmt"
 	"log"
 	"net"
+	orderHandler "order_service/internal/api/handlers/order"
 	"order_service/internal/config"
 	"order_service/internal/infra"
+	"order_service/internal/kafka"
+	orderRepo "order_service/internal/repo/order"
+	orderService "order_service/internal/service/order"
+	orderpb "order_service/proto/gen"
 
 	"google.golang.org/grpc"
 )
@@ -24,7 +29,16 @@ func InitializeApp(ctx context.Context, cnf *config.Config) (*App, error) {
 		return nil, fmt.Errorf("database connection failed: %w", err)
 
 	}
+	kfInfra := infra.NewKafkaInfra([]string{"localhost:9092"})
+	writer := kfInfra.Writer(kafka.OrderEventsTopic)
+	reader := kfInfra.Reader(kafka.OrderResultsTopic, "order_service_group")
+	producer := kafka.NewProducer(writer)
+	consumer := kafka.NewConsumer(reader)
+	// start consumer
 
+	repo := orderRepo.NewRepo(db)
+	service := orderService.NewService(producer, consumer, repo)
+	hanlder := orderHandler.NewHandler(service)
 	log.Println("Db connection successful")
 	grpcServer := grpc.NewServer()
 
@@ -33,6 +47,7 @@ func InitializeApp(ctx context.Context, cnf *config.Config) (*App, error) {
 		return nil, fmt.Errorf("lis connection failed: %w", err)
 
 	}
+	orderpb.RegisterOrderServiceServer(grpcServer, hanlder)
 	go func() {
 		<-ctx.Done()
 		db.Close()
