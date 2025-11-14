@@ -39,6 +39,7 @@ func InitializeApp(ctx context.Context, cfg *config.Config) (*App, error) {
 		return nil, err
 
 	}
+
 	dynamoDBConfig := db.GetDBConfig()
 	client := dynamodb.NewFromConfig(dynamoDBConfig)
 	log.Println("dynamo db connected")
