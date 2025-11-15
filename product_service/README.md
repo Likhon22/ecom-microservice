@@ -28,96 +28,104 @@ This README covers features, architecture, dependency injection details (includi
 - DynamoDB storage (development: DynamoDB Local)
 - Uses a User Service client to validate user/customer-related operations
 - Clear Handler → Service → Repo separation for testability and maintainability
-- Dependency injection for repo/client wiring and singleton DB config for stable infra
+
+# Product Service
+
+A gRPC microservice that manages product data for the ecom_microservice project. It persists product records in DynamoDB (DynamoDB Local for development) and exposes a Protobuf-defined gRPC API. The service follows the repo-wide layering convention (handler → service → repo) and uses constructor-based dependency injection and a singleton DB config for infra.
+
+## 🎯 Overview
+
+The Product Service provides the product lifecycle: create, read (list & by-id), update, and delete. It is intended to be consumed by other microservices (cart, order) and by an HTTP gateway (Kong) that translates JSON requests into gRPC calls.
+
+Key responsibilities:
+
+- Store and query product data in DynamoDB
+- Expose a protobuf/gRPC API for product operations
+- Validate and shape responses using a `StandardResponse` wrapper
+- Call User Service where product operations require user validation
+
+## 🏗️ Technology & Stack
+
+- Language: Go (1.20+)
+- gRPC + Protocol Buffers (buf toolchain)
+- Persistent store (dev): DynamoDB Local (AWS SDK v2)
+- Gateway: Kong (grpc-gateway plugin) for JSON→gRPC translation
+
+## 📁 Project Structure
+
+```
+product_service/
+├── cmd/api/                    # Application entrypoint
+│   └── main.go                 # Starts the server
+├── internal/
+│   ├── api/handlers/           # gRPC request handlers
+│   │   └── product/handler.go  # Handler implementations
+│   ├── bootstrap/              # Application initialization & DI
+│   │   └── server.go
+│   ├── client/                 # gRPC clients to other services
+│   │   └── product/            # (if needed)
+│   ├── config/                 # Configuration loader
+│   ├── domain/                 # Domain models
+│   ├── infra/                  # Infrastructure helpers (DynamoDB config)
+│   │   └── db/db.go
+│   ├── repo/                   # Persistence layer (DynamoDB)
+│   │   └── productRepo/repo.go
+│   └── services/               # Business logic
+│       └── productService/service.go
+├── migrations/                 # Table init helpers
+├── proto/                      # Protobuf definitions & buf config
+└── proto/gen/                  # Generated code (checked-in for convenience)
+```
+
+## ✨ Features
+
+- Create, list, fetch-by-id, update, and delete products
+- gRPC API with `StandardResponse` wrapper for consistent responses
+- DynamoDB-backed persistence with migration helper for table creation
+- Clear DI pattern: `NewRepo`, `NewService`, `NewHandler` used during bootstrap
 
 ## Architecture & Patterns
 
-- Layered structure:
-
-  - `internal/api/handlers` — gRPC handlers (translate RPC → service layer)
-  - `internal/services` — business logic and orchestration
-  - `internal/repo` — persistence (DynamoDB) and migrations
-  - `internal/client` — gRPC clients to other microservices (User Service)
-  - `internal/infra` — infra helpers (DynamoDB configuration, connection helpers)
-  - `proto/` — protobuf service definitions and generated code
-
-- Dependency Injection: constructors like `NewRepo`, `NewService`, `NewHandler` are used during bootstrap (`internal/bootstrap/server.go`) to wire components. This enables easy testing by providing mocked implementations.
-
-- Singleton pattern for DB configuration: `internal/infra/db/db.go` uses a package-level `sync.Once` and a `GetDBConfig()` function that initializes and returns an `aws.Config` exactly once. This ensures a single, thread-safe DynamoDB client configuration is shared across the service:
-
-```go
-var (
-    once sync.Once
-    cfg  aws.Config
-)
-
-func loadDBConfig() { /* loads config and sets cfg */ }
-
-func GetDBConfig() aws.Config {
-    once.Do(loadDBConfig)
-    return cfg
-}
-```
-
-This pattern prevents redundant SDK configuration and makes the infra deterministic for tests and runtime.
-
-## Repo layout (important paths)
-
-- `cmd/api/main.go` — service entrypoint
-- `internal/bootstrap/server.go` — app wiring (clients, repo, service, gRPC registration)
-- `internal/api/handlers/product/handler.go` — gRPC handlers
-- `internal/services/productService/service.go` — business logic
-- `internal/repo/productRepo/repo.go` — DynamoDB data access
-- `internal/client/product/client.go` — any external client usage (e.g., user service)
-- `internal/infra/db/db.go` — DynamoDB SDK configuration
-- `migrations/` — table initialization helpers (called from bootstrap)
-- `proto/product.proto` — protobuf definitions
-- `proto/gen/` — generated Go protobuf code (the repo includes generated files for convenience)
+- Layered design: `handlers` translate RPC → `services` (business rules) → `repo` (persistence)
+- Dependency injection in `internal/bootstrap/server.go` for testability
+- Singleton DB configuration in `internal/infra/db/db.go` using `sync.Once` to ensure a single aws.Config / DynamoDB client instance
 
 ## Environment
 
-Create a `.env` in `product_service/` or provide the environment variables through your system. Example:
+Create a `.env` file in `product_service/` or export these variables in your environment. Example:
 
 ```env
 VERSION=1
-ADDR=":5003"
 SERVICE_NAME=product_service
+ADDR=":5003"
 USER_SERVICE_ADDR=0.0.0.0:5001
 ```
 
 Notes:
 
-- Do NOT leave spaces around `=` (e.g., `ADDR = ":5003"`), `godotenv`/Make include expects `ADDR=":5003"`.
-- `ADDR` is the gRPC server listen address.
-- `USER_SERVICE_ADDR` must point to a running user service; the product service attempts to dial it during startup.
-
-## Dependencies
-
-- Go 1.20+
-- buf (for protobuf generation)
-- DynamoDB Local (for local dev) or real AWS credentials for production
+- Avoid spaces around `=` in `.env` (e.g., `ADDR = ":5003"` will break parsers)
+- `ADDR` is the gRPC server listen address
+- `USER_SERVICE_ADDR` should point to a running `user_service` (product service dials it at startup)
 
 ## DynamoDB Local (local development)
 
-Start DynamoDB Local (expected endpoint `http://localhost:9000`):
+Run DynamoDB Local for development (expected endpoint `http://localhost:9000`):
 
 ```bash
 docker run -d -p 9000:8000 amazon/dynamodb-local
 ```
 
-The service's DB loader uses static dummy credentials and explicit endpoint resolver in `internal/infra/db/db.go` so local development works without AWS credentials.
-
-During bootstrap the migration helper `migrations.InitProductTable(client)` is invoked to create the `Products` table if needed.
+The code in `internal/infra/db/db.go` uses an explicit endpoint resolver and dummy credentials so local development works without AWS credentials. During bootstrap the migration helper `migrations.InitProductTable` will create the `Products` table if missing.
 
 ## Build & Run
 
-Install modules and tidy:
+Install modules and tidy dependencies:
 
 ```bash
 go mod tidy
 ```
 
-Generate protobuf (if you changed proto):
+Generate protobuf artifacts (only if you changed `.proto` files):
 
 ```bash
 cd proto
@@ -125,13 +133,13 @@ buf generate
 cd ..
 ```
 
-Build the binary:
+Build:
 
 ```bash
 go build -o bin/main ./cmd/api
 ```
 
-Run the service:
+Run:
 
 ```bash
 go run ./cmd/api
@@ -139,23 +147,23 @@ go run ./cmd/api
 ./bin/main
 ```
 
-Logs: bootstrap prints messages when DynamoDB client is created and when gRPC server starts listening.
+Logs from bootstrap include DynamoDB client creation and gRPC listen address.
 
 ## Protobuf / gRPC API
 
-Service proto: `proto/product.proto`. Key RPCs (each returns `StandardResponse` wrapper):
+The service contract is defined in `proto/product.proto`. RPCs are wrapped with `StandardResponse` for a consistent response envelope. Example RPCs:
 
 - `CreateProduct(CreateProductRequest) returns (StandardResponse)`
-- `GetProduct(GetProductsRequest) returns (StandardResponse)`
+- `GetProducts(GetProductsRequest) returns (StandardResponse)`
 - `GetProductById(GetProductByIdRequest) returns (StandardResponse)`
 - `UpdateProduct(UpdateProductRequest) returns (StandardResponse)`
 - `DeleteProduct(DeleteProductRequest) returns (StandardResponse)`
 
-`StandardResponse` provides `success`, `message`, `status_code` and a `oneof result` for typed payloads.
+When exposing HTTP endpoints via Kong (or other gateways) enable the grpc-gateway plugin and provide `product.proto` inside the gateway container so JSON requests can be converted to Protobuf.
 
-When exposing HTTP endpoints through Kong (grpc-gateway plugin) or Envoy, configure the gateway with `product.proto` so it can convert JSON → Protobuf.
+## Kong Example (gateway side)
 
-### Example Kong config snippet (gateway must have the proto available inside the container)
+Gateway must have access to `product.proto`. Example plugin snippet:
 
 ```yaml
 plugins:
@@ -172,14 +180,11 @@ service:
       methods: [POST]
 ```
 
-### Example JSON → Kong → gRPC call (add product)
+## Example: JSON → Kong → gRPC (Add Product)
 
-Request to Kong (HTTP):
+POST to Kong's HTTP endpoint with JSON body (Content-Type: application/json). Kong converts and forwards to gRPC. Example payload:
 
-```http
-POST http://localhost:8000/products
-Content-Type: application/json
-
+```json
 {
   "name": "T-Shirt",
   "description": "100% cotton",
@@ -188,30 +193,18 @@ Content-Type: application/json
 }
 ```
 
-Kong (grpc-gateway) converts JSON to Protobuf and forwards to the product gRPC server.
-
-## Direct gRPC client example (Go)
-
-```go
-conn, err := grpc.DialContext(ctx, ":5003", grpc.WithTransportCredentials(insecure.NewCredentials()))
-defer conn.Close()
-client := productpb.NewProductServiceClient(conn)
-resp, err := client.CreateProduct(ctx, &productpb.CreateProductRequest{...})
-```
-
 ## Troubleshooting
 
-- Startup fails with "missing core service environment variables": verify `.env` and that variables are present and spelled as expected.
-- `dial user service: context canceled` — product service attempts a blocking dial to `USER_SERVICE_ADDR`. Start `user_service` first or change the address.
-- DynamoDB errors — ensure DynamoDB Local is running on `http://localhost:9000`.
-- `buf generate` errors — ensure `buf` is installed and `proto/buf.yaml` dependencies are reachable (googleapis/protoc-gen-validate deps). If you generate in a container, ensure network access.
+- Startup fails with `dial user service: context canceled`: ensure `user_service` is running and `USER_SERVICE_ADDR` is correct. The product service attempts a blocking dial to the user service during bootstrap.
+- DynamoDB errors: ensure DynamoDB Local is running on `http://localhost:9000`.
+- `buf generate` errors: install `buf` and ensure `proto/buf.yaml` dependencies are reachable.
 
 ## Tests
 
-There are no tests included by default. Recommended additions:
+There are no unit/integration tests included by default. Recommended:
 
-- Unit tests for `internal/services/productService` (table-driven tests)
-- Integration tests using a DynamoDB Local instance and test data
+- Unit tests for `internal/services/productService`
+- Integration tests using DynamoDB Local and a test table
 
 Run unit tests:
 
@@ -221,20 +214,21 @@ go test ./internal/services/...
 
 ## Deployment notes
 
-- In production, remove the local endpoint resolver in `internal/infra/db/db.go` and rely on real AWS credentials (or IAM roles).
-- Avoid blocking `grpc.Dial` calls at startup in production; use backoff/retry or health-checks so the service can start and recover if dependencies are temporarily unavailable.
+- In production remove local endpoint resolver and use real AWS credentials / IAM roles in `internal/infra/db/db.go`.
+- Avoid blocking `grpc.Dial` calls in bootstrap for production; prefer retries/backoff or non-blocking health checks so the service can start even if dependencies are temporarily unavailable.
 
-## Contribution and extension
+## Contribution & Extension
 
-- To add a new RPC: update `proto/product.proto`, run `buf generate`, implement handler -> service -> repo changes, wire in `internal/bootstrap/server.go` and test locally.
-- Follow the pattern: handler (minimal) → service (business logic) → repo (persistence). Use DI via constructors (`NewRepo`, `NewService`, `NewHandler`).
+- To add a new RPC: update `proto/product.proto`, run `buf generate`, implement the handler → service → repo changes, wire in `internal/bootstrap/server.go`, and test locally.
+- Follow the repository pattern: handler (thin) → service (business rules) → repo (persistence). Use constructor DI for each component.
 
 ## Where to look in code
 
-- `internal/services/productService/service.go` — business logic and response building
-- `internal/repo/productRepo/repo.go` — how products are persisted and queries are done
-- `internal/bootstrap/server.go` — wiring (user client, repo, service, handler)
+- `internal/bootstrap/server.go` — wiring and DI
+- `internal/api/handlers/product/handler.go` — gRPC handlers
+- `internal/services/productService/service.go` — business logic
+- `internal/repo/productRepo/repo.go` — DynamoDB persistence
 
 ---
 
-If you want, I can add a Dockerfile + docker-compose snippet that brings up DynamoDB Local + the product service and a Kong gateway example for local end-to-end testing.
+If you'd like, I can also add a Docker Compose snippet that brings up DynamoDB Local plus the product service and a Kong gateway for local end-to-end testing.
