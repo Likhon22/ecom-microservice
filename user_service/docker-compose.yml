@@ -1,0 +1,32 @@
+version: "3.8"
+services:
+  user:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: dev
+    container_name: user_service
+    env_file:
+      - .env
+      - .env.docker
+    volumes:
+      - .:/app
+    networks:
+      - microservice
+    ports:
+      - 5001:5001
+    depends_on:
+      - mongo
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    volumes:
+      - mongo_user:/data/db
+    networks:
+      - microservice
+volumes:
+  mongo_user:
+
+networks:
+  microservice:
+    name: bridge

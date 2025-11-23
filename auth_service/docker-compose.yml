@@ -1,0 +1,42 @@
+version: "3.8"
+services:
+  auth:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: dev
+    container_name: auth-service
+    env_file:
+      - .env
+      - .env.docker
+    volumes:
+      - .:/app
+    ports:
+      - "5002:5002"
+
+    networks:
+      - microservice
+    depends_on:
+      - mongo
+      - redis
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    volumes:
+      - mongo_auth:/data/db
+    networks:
+      - microservice
+
+  redis:
+    image: redis:8.2
+    container_name: redis
+    volumes:
+      - redis_auth:/data
+    networks:
+      - microservice
+volumes:
+  mongo_auth:
+  redis_auth:
+networks:
+  microservice:
+    driver: bridge

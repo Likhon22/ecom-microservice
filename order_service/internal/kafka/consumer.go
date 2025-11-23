@@ -21,10 +21,12 @@ func NewConsumer(reader *kafka.Reader) (Consumer, func() error) {
 }
 
 func (p *consumer) Start(ctx context.Context, key, value []byte) error {
-	msg, err := p.reader.ReadMessage(ctx)
-	if err != nil {
-		return err
+	for {
+		msg, err := p.reader.ReadMessage(ctx)
+		if err != nil {
+			return err
+		}
+		log.Println("message consumed")
+		return nil
 	}
-	log.Println("message consumed")
-	return nil
 }

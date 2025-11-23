@@ -1,0 +1,67 @@
+version: "3.8"
+services:
+  auth-mongo:
+    image: mongo:latest
+    container_name: auth-mongo
+    volumes:
+      - auth_mongo_data:/data/db
+    networks:
+      - microservice
+
+  user-mongo:
+    image: mongo:latest
+    container_name: user-mongo
+    volumes:
+      - user_mongo_data:/data/db
+    networks:
+      - microservice
+
+  redis:
+    image: redis:8.2
+    container_name: redis
+    volumes:
+      - redis_data:/data
+    networks:
+      - microservice
+
+  auth_service:
+    build:
+      context: ./auth_service
+      dockerfile: Dockerfile
+      target: dev
+    container_name: auth_service
+    env_file:
+      - ./auth_service/.env
+      - ./auth_service/.env.docker
+    ports:
+      - 5002:5002
+    volumes:
+      - ./auth_service:/app
+    networks:
+      - microservice
+    depends_on:
+      - auth-mongo
+      - redis
+  user_service:
+    build:
+      context: ./user_service
+      dockerfile: Dockerfile
+      target: dev
+    container_name: user_service
+    ports:
+      - 5000:5000
+      - 5001:5001
+    env_file:
+      - ./user_service/.env
+      - ./user_service/.env.docker
+    volumes:
+      - ./user_service:/app
+    depends_on:
+      - user-mongo
+volumes:
+  auth_mongo_data:
+  user_mongo_data:
+  redis_data:
+networks:
+  microservice:
+    driver: bridge

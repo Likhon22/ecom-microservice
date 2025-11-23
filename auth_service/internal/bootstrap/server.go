@@ -32,7 +32,7 @@ func InitializeApp(ctx context.Context, cfg *config.Config) (*App, error) {
 		return nil, fmt.Errorf("connect mongo: %w", err)
 	}
 	log.Println("MongoDB connected successfully")
-	rdb := db.ConnectRedis("localhost:6379", 0)
+	rdb := db.ConnectRedis(cfg.DBCnf.RedisUrl, 0)
 	log.Println("redis connected")
 
 	// External gRPC client
