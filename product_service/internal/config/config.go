@@ -13,6 +13,7 @@ type Config struct {
 	ServiceName        string
 	Addr               string
 	UserServiceAddress string
+	DBUrl              string
 }
 
 var (
@@ -28,11 +29,14 @@ func loadConfig() {
 	serviceName := os.Getenv("SERVICE_NAME")
 	addr := os.Getenv("ADDR")
 	user_service_addr := os.Getenv("USER_SERVICE_ADDR")
+	dynamodbURl := os.Getenv("DYNAMO_DB_URL")
+
 	config = &Config{
 		Version:            version,
 		ServiceName:        serviceName,
 		Addr:               addr,
 		UserServiceAddress: user_service_addr,
+		DBUrl:              dynamodbURl,
 	}
 	validateMainConfig(config)
 }
@@ -45,6 +49,9 @@ func GetConfig() *Config {
 func validateMainConfig(cfg *Config) {
 	if cfg.Version == "" || cfg.Addr == "" || cfg.ServiceName == "" || cfg.UserServiceAddress == "" {
 		log.Fatal().Msg("missing core service environment variables")
+	}
+	if cfg.DBUrl == "" {
+		log.Fatal().Msg("missing db environment variables")
 	}
 
 }

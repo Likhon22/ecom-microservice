@@ -2,7 +2,10 @@ package kafka
 
 import (
 	"context"
-	"log"
+	"fmt"
+	orderpb "order_service/proto/gen"
+
+	"google.golang.org/protobuf/proto"
 
 	"github.com/segmentio/kafka-go"
 )
@@ -12,7 +15,7 @@ type producer struct {
 }
 
 type Producer interface {
-	Publish(ctx context.Context, key, value []byte) error
+	PublishOrderCreated(ctx context.Context, event *orderpb.OrderCreatedEvent) error
 }
 
 func NewProducer(writer *kafka.Writer) (Producer, func() error) {
@@ -20,14 +23,13 @@ func NewProducer(writer *kafka.Writer) (Producer, func() error) {
 	return p, p.writer.Close
 }
 
-func (p *producer) Publish(ctx context.Context, key, value []byte) error {
-	err := p.writer.WriteMessages(ctx, kafka.Message{
-		Key:   key,
+func (p *producer) PublishOrderCreated(ctx context.Context, event *orderpb.OrderCreatedEvent) error {
+	value, err := proto.Marshal(event)
+	if err != nil {
+		return fmt.Errorf("failed to marshal event: %w", err)
+	}
+	return p.writer.WriteMessages(ctx, kafka.Message{
+		Key:   []byte(event.OrderId),
 		Value: value,
 	})
-	if err != nil {
-		return err
-	}
-	log.Println("message published")
-	return nil
 }

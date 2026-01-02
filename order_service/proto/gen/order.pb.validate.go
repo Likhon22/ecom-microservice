@@ -63,6 +63,8 @@ func (m *CreateOrderRequest) validate(all bool) error {
 
 	// no validation rules for Quantity
 
+	// no validation rules for Category
+
 	if len(errors) > 0 {
 		return CreateOrderRequestMultiError(errors)
 	}

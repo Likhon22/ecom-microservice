@@ -15,7 +15,7 @@ var (
 	cfg  aws.Config
 )
 
-func loadDBConfig() {
+func loadDBConfig(dbUrl string) {
 	loadedCfg, err := config.LoadDefaultConfig(context.Background(),
 		config.WithRegion("us-east-1"),
 		config.WithCredentialsProvider(
@@ -23,7 +23,7 @@ func loadDBConfig() {
 		),
 		config.WithEndpointResolver(
 			aws.EndpointResolverFunc(func(service, region string) (aws.Endpoint, error) {
-				return aws.Endpoint{URL: "http://localhost:9000"}, nil
+				return aws.Endpoint{URL: dbUrl}, nil
 			}),
 		),
 	)
@@ -34,7 +34,9 @@ func loadDBConfig() {
 	cfg = loadedCfg
 }
 
-func GetDBConfig() aws.Config {
-	once.Do(loadDBConfig)
+func GetDBConfig(dbUrl string) aws.Config {
+	once.Do(func() {
+		loadDBConfig(dbUrl)
+	})
 	return cfg
 }

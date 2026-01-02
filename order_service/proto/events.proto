@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package events;
+option go_package = "github.com/Likhon22/ecom_microservice/auth_service/proto/gen;orderpb";
+
+
+
+message OrderCreatedEvent {
+    string order_id = 1;
+    string user_id = 2;
+    repeated OrderItem items = 3;
+}
+
+message OrderItem {
+    string product_id = 1;
+    int32 quantity = 2;
+}
+
+
+message OrderValidationResultEvent {
+    string order_id = 1;
+    bool is_valid = 2;
+    string error_message = 3;
+}

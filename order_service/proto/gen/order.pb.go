@@ -28,6 +28,7 @@ type CreateOrderRequest struct {
 	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 	ProductId     string                 `protobuf:"bytes,2,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty"`
 	Quantity      int32                  `protobuf:"varint,3,opt,name=quantity,proto3" json:"quantity,omitempty"`
+	Category      string                 `protobuf:"bytes,4,opt,name=category,proto3" json:"category,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -81,6 +82,13 @@ func (x *CreateOrderRequest) GetQuantity() int32 {
 		return x.Quantity
 	}
 	return 0
+}
+
+func (x *CreateOrderRequest) GetCategory() string {
+	if x != nil {
+		return x.Category
+	}
+	return ""
 }
 
 type CreateOrderResponse struct {
@@ -229,12 +237,13 @@ var File_order_proto protoreflect.FileDescriptor
 
 const file_order_proto_rawDesc = "" +
 	"\n" +
-	"\vorder.proto\x12\rorder_service\x1a\x17validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\"h\n" +
+	"\vorder.proto\x12\rorder_service\x1a\x17validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\"\x84\x01\n" +
 	"\x12CreateOrderRequest\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x1d\n" +
 	"\n" +
 	"product_id\x18\x02 \x01(\tR\tproductId\x12\x1a\n" +
-	"\bquantity\x18\x03 \x01(\x05R\bquantity\"H\n" +
+	"\bquantity\x18\x03 \x01(\x05R\bquantity\x12\x1a\n" +
+	"\bcategory\x18\x04 \x01(\tR\bcategory\"H\n" +
 	"\x13CreateOrderResponse\x12\x19\n" +
 	"\border_id\x18\x01 \x01(\tR\aorderId\x12\x16\n" +
 	"\x06status\x18\x02 \x01(\tR\x06status\"\xc3\x01\n" +

@@ -15,7 +15,15 @@ services:
       - user_mongo_data:/data/db
     networks:
       - microservice
-
+  dynamo_db:
+    image: amazon/dynamodb-local
+    container_name: dynamo_db
+    ports:
+      - 9000:8000
+    volumes:
+      - dynamodb_product_data:/home/dynamodblocal/data
+    networks:
+      - microservice
   redis:
     image: redis:8.2
     container_name: redis
@@ -58,10 +66,27 @@ services:
       - ./user_service:/app
     depends_on:
       - user-mongo
+
+  product_service:
+    build:
+      context: ./product_service
+      dockerfile: Dockerfile
+      target: dev
+    container_name: product_service
+    ports:
+      - 5003:5003
+    env_file:
+      - ./product_service/.env
+      - ./product_service/.env.docker
+    volumes:
+      - ./product_service:/app
+    depends_on:
+      - dynamo_db
 volumes:
   auth_mongo_data:
   user_mongo_data:
   redis_data:
+  dynamodb_product_data:
 networks:
   microservice:
     driver: bridge
